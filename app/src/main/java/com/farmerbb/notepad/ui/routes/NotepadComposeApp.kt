@@ -17,6 +17,7 @@
 
 package com.farmerbb.notepad.ui.routes
 
+import android.annotation.SuppressLint
 import android.view.KeyEvent
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -124,6 +125,7 @@ fun NotepadComposeAppRoute() {
     }
 }
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 private fun NotepadComposeApp(
     vm: NotepadViewModel = getViewModel(),
@@ -153,6 +155,7 @@ private fun NotepadComposeApp(
     val firstRunComplete by vm.prefs.firstRunComplete.collectAsState()
     val firstViewComplete by vm.prefs.firstViewComplete.collectAsState()
     val showDoubleTapMessage by vm.prefs.showDoubleTapMessage.collectAsState()
+    val userName by vm.prefs.userName.collectAsState()
 
     var navState by rememberSaveable(saver = navStateSaver) { mutableStateOf(initState) }
     var isPrinting by remember { mutableStateOf(false) }
@@ -167,6 +170,7 @@ private fun NotepadComposeApp(
     var showFirstRunDialog by rememberSaveable { mutableStateOf(false) }
     var showFirstViewDialog by rememberSaveable { mutableStateOf(false) }
     var showMenu by rememberSaveable { mutableStateOf(false) }
+
 
     val printController = rememberPrintableController()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -190,7 +194,7 @@ private fun NotepadComposeApp(
     var backButton: @Composable (() -> Unit)? = null
     var actions: @Composable RowScope.() -> Unit = {}
     val content: @Composable BoxScope.() -> Unit
-    
+
     /*********************** Callbacks ***********************/
 
     val updateNavState: (id: Long) -> Unit = { id ->
@@ -234,7 +238,7 @@ private fun NotepadComposeApp(
         onDismiss()
 
         vm.showToastIf(text.isEmpty(), R.string.empty_note) {
-            when(navState) {
+            when (navState) {
                 is Edit -> vm.saveDraft { onPrint() }
                 else -> onPrint()
             }
@@ -254,8 +258,8 @@ private fun NotepadComposeApp(
     }
 
     /*********************** Dialogs ***********************/
-    
-    if(showAboutDialog) {
+
+    if (showAboutDialog) {
         AboutDialog(
             onDismiss = {
                 showAboutDialog = false
@@ -267,7 +271,7 @@ private fun NotepadComposeApp(
         )
     }
 
-    if(showSettingsDialog) {
+    if (showSettingsDialog) {
         SettingsDialog(
             onDismiss = {
                 showSettingsDialog = false
@@ -275,7 +279,7 @@ private fun NotepadComposeApp(
         )
     }
 
-    if(showDeleteDialog) {
+    if (showDeleteDialog) {
         DeleteDialog(
             onConfirm = {
                 showDeleteDialog = false
@@ -289,7 +293,7 @@ private fun NotepadComposeApp(
         )
     }
 
-    if(showMultiDeleteDialog) {
+    if (showMultiDeleteDialog) {
         DeleteDialog(
             isMultiple = selectedNotes.size > 1,
             onConfirm = {
@@ -308,7 +312,7 @@ private fun NotepadComposeApp(
         )
     }
 
-    if(showSaveDialog) {
+    if (showSaveDialog) {
         SaveDialog(
             onConfirm = {
                 showSaveDialog = false
@@ -325,14 +329,14 @@ private fun NotepadComposeApp(
         )
     }
 
-    if(showFirstRunDialog) {
+    if (showFirstRunDialog) {
         FirstRunDialog {
             showFirstRunDialog = false
             vm.firstRunComplete()
         }
     }
 
-    if(showFirstViewDialog) {
+    if (showFirstViewDialog) {
         FirstViewDialog {
             showFirstViewDialog = false
             vm.firstViewComplete()
@@ -404,7 +408,7 @@ private fun NotepadComposeApp(
         }
     }
 
-    when(val state = navState) {
+    when (val state = navState) {
 
         /*********************** Note List ***********************/
 
@@ -425,7 +429,11 @@ private fun NotepadComposeApp(
             )
 
             if (!multiSelectEnabled) {
-                title = stringResource(id = R.string.app_name)
+                title = if (userName.isNotEmpty()) {
+                    "Welcome: $userName"
+                } else {
+                    stringResource(id = R.string.app_name)
+                }
                 backButton = null
                 actions = {
                     MultiSelectButton {
@@ -621,7 +629,7 @@ private fun NotepadComposeApp(
             }
         },
         content = {
-            if(isMultiPane) {
+            if (isMultiPane) {
                 Row {
                     Box(modifier = Modifier.weight(1f)) {
                         NoteListContentShared()

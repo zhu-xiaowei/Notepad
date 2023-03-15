@@ -1,5 +1,6 @@
 package com.farmerbb.notepad.ui.routes
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
@@ -44,6 +45,7 @@ fun StandaloneEditorRoute(
     }
 }
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 private fun StandaloneEditor(
     vm: NotepadViewModel = getViewModel(),

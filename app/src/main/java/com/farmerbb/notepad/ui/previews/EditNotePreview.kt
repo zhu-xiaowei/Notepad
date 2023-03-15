@@ -15,6 +15,7 @@
 
 package com.farmerbb.notepad.ui.previews
 
+import android.annotation.SuppressLint
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TopAppBar
@@ -33,6 +34,7 @@ import com.farmerbb.notepad.ui.components.SaveButton
 import com.farmerbb.notepad.ui.content.EditNoteContent
 import java.util.Date
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 private fun EditNote(note: Note) {
     Scaffold(

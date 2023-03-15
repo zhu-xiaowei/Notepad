@@ -29,9 +29,9 @@ import com.farmerbb.notepad.model.ReleaseType
 
 fun Context.checkForUpdates() {
     val id = BuildConfig.APPLICATION_ID
-    val url = when(releaseType) {
+    val url = when (releaseType) {
         ReleaseType.PlayStore -> {
-            if(isPlayStoreInstalled)
+            if (isPlayStoreInstalled)
                 "https://play.google.com/store/apps/details?id=$id"
             else
                 "https://github.com/farmerbb/Notepad/releases"
@@ -46,7 +46,8 @@ fun Context.checkForUpdates() {
             data = Uri.parse(url)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         })
-    } catch (ignored: ActivityNotFoundException) {}
+    } catch (ignored: ActivityNotFoundException) {
+    }
 }
 
 fun Context.showShareSheet(text: String) = try {
@@ -66,27 +67,29 @@ fun Context.showShareSheet(text: String) = try {
     e.printStackTrace()
 }
 
-val Context.dataStore by preferencesDataStore("settings")
+val Context.dataStore by preferencesDataStore("workshop_settings")
 
 @Suppress("Deprecation")
-private val Context.isPlayStoreInstalled get() = try {
-    packageManager.getPackageInfo("com.android.vending", 0)
-    true
-} catch(e: PackageManager.NameNotFoundException) {
-    false
-}
+private val Context.isPlayStoreInstalled
+    get() = try {
+        packageManager.getPackageInfo("com.android.vending", 0)
+        true
+    } catch (e: PackageManager.NameNotFoundException) {
+        false
+    }
 
 private val Context.releaseType: ReleaseType
     @Suppress("Deprecation", "PackageManagerGetSignatures")
     get() {
         val info = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
-        for(enum in ReleaseType.values()) {
+        for (enum in ReleaseType.values()) {
             try {
                 val enumSignature = Signature(Base64.decode(enum.signature, Base64.DEFAULT))
-                for(signature in info.signatures) {
-                    if(signature == enumSignature) return enum
+                for (signature in info.signatures) {
+                    if (signature == enumSignature) return enum
                 }
-            } catch (ignored: Exception) {}
+            } catch (ignored: Exception) {
+            }
         }
 
         return ReleaseType.Unknown

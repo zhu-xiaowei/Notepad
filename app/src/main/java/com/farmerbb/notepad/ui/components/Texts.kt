@@ -32,7 +32,7 @@ fun AppBarText(text: String) {
         text = text,
         color = Color.White,
         maxLines = 1,
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Visible
     )
 }
 

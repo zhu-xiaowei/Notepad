@@ -76,6 +76,7 @@
     <string name="check_for_updates">Check for Updates</string>
     <string name="rtl_layout">Right-to-left layout</string>
     <string name="pref_title_font_type">Font type</string>
+    <string name="user_name_is_null">User name can not be null</string>
 
     <string-array name="sort_by_list">
         <item>Date (newest first)</item>

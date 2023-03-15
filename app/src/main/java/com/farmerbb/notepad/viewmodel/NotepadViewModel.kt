@@ -25,12 +25,8 @@ import androidx.lifecycle.viewModelScope
 import com.farmerbb.notepad.R
 import com.farmerbb.notepad.data.NotepadRepository
 import com.farmerbb.notepad.data.PreferenceManager.Companion.prefs
-import com.farmerbb.notepad.model.FilenameFormat
-import com.farmerbb.notepad.model.Note
-import com.farmerbb.notepad.model.NoteMetadata
-import com.farmerbb.notepad.model.PrefKeys
+import com.farmerbb.notepad.model.*
 import com.farmerbb.notepad.usecase.ArtVandelay
-import com.farmerbb.notepad.usecase.DataMigrator
 import com.farmerbb.notepad.usecase.KeyboardShortcuts
 import com.farmerbb.notepad.usecase.SystemTheme
 import com.farmerbb.notepad.usecase.Toaster
@@ -38,36 +34,28 @@ import com.farmerbb.notepad.utils.checkForUpdates
 import com.farmerbb.notepad.utils.safeGetOrDefault
 import com.farmerbb.notepad.utils.showShareSheet
 import de.schnettler.datastore.manager.DataStoreManager
-import java.io.InputStream
-import java.io.OutputStream
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapConcat
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.*
 import okio.buffer
 import okio.sink
 import okio.source
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import java.io.InputStream
+import java.io.OutputStream
+import java.util.*
 
 class NotepadViewModel(
     private val context: Application,
     private val repo: NotepadRepository,
     val dataStoreManager: DataStoreManager,
-    private val dataMigrator: DataMigrator,
     private val toaster: Toaster,
     private val artVandelay: ArtVandelay,
     private val keyboardShortcuts: KeyboardShortcuts,
     systemTheme: SystemTheme
-): ViewModel() {
+) : ViewModel() {
 
     /*********************** Data ***********************/
 
@@ -372,19 +360,35 @@ class NotepadViewModel(
         } ?: onLoad(null)
     }
 
+    fun saveUserName(userName: String) = viewModelScope.launch(Dispatchers.IO) {
+        dataStoreManager.editPreference(
+            key = PrefKeys.userName,
+            newValue = userName
+        )
+    }
+
+    fun saveUserId() = viewModelScope.launch(Dispatchers.IO) {
+        dataStoreManager.editPreference(
+            key = PrefKeys.userId,
+            newValue = UUID.randomUUID().toString()
+        )
+    }
+
+    suspend fun getUserName(): String {
+//        val first = dataStoreManager.dataStore.data.first()
+//        return first[PrefKeys.userName] ?: ""
+        return dataStoreManager.getPreference(Prefs.UserName)
+    }
+
     /*********************** Miscellaneous ***********************/
 
     private suspend fun String.checkLength(
         onSuccess: suspend () -> Unit
-    ) = when(length) {
+    ) = when (length) {
         0 -> toaster.toast(R.string.empty_note)
         else -> onSuccess()
     }
 
-    fun migrateData(onComplete: () -> Unit) = viewModelScope.launch {
-        dataMigrator.migrate()
-        onComplete()
-    }
 
     fun keyboardShortcutPressed(keyCode: Int) = keyboardShortcuts.pressed(keyCode)
     fun registerKeyboardShortcuts(vararg mappings: Pair<Int, () -> Unit>) =
@@ -397,7 +401,6 @@ val viewModelModule = module {
             context = androidApplication(),
             repo = get(),
             dataStoreManager = get(),
-            dataMigrator = get(),
             toaster = get(),
             artVandelay = get(),
             keyboardShortcuts = get(),

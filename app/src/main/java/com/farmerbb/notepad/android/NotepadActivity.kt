@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-@file:Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
+@file:Suppress("DEPRECATION", "OVERRIDE_DEPRECATION", "RestrictedApi")
 
 package com.farmerbb.notepad.android
 
@@ -22,25 +22,30 @@ import android.os.Bundle
 import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.lifecycle.lifecycleScope
 import com.farmerbb.notepad.ui.routes.NotepadComposeAppRoute
 import com.farmerbb.notepad.viewmodel.NotepadViewModel
 import com.github.k1rakishou.fsaf.FileChooser
 import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class NotepadActivity: ComponentActivity(), FSAFActivityCallbacks {
+class NotepadActivity : ComponentActivity(), FSAFActivityCallbacks {
     private val vm: NotepadViewModel by viewModel()
     private val fileChooser: FileChooser = get()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fileChooser.setCallbacks(this)
-
-        vm.migrateData {
-            setContent {
-                NotepadComposeAppRoute()
+        lifecycleScope.launch {
+            val userName = vm.getUserName()
+            if (userName.isEmpty()) {
+                startActivity(Intent(this@NotepadActivity, LoginActivity::class.java))
             }
+        }
+        fileChooser.setCallbacks(this)
+        setContent {
+            NotepadComposeAppRoute()
         }
     }
 
@@ -62,7 +67,7 @@ class NotepadActivity: ComponentActivity(), FSAFActivityCallbacks {
     }
 
     override fun fsafStartActivityForResult(intent: Intent, requestCode: Int) {
-        when(intent.action) {
+        when (intent.action) {
             Intent.ACTION_OPEN_DOCUMENT -> intent.type = "text/plain"
             Intent.ACTION_OPEN_DOCUMENT_TREE -> intent.removeExtra(Intent.EXTRA_LOCAL_ONLY)
         }
@@ -80,6 +85,14 @@ class NotepadActivity: ComponentActivity(), FSAFActivityCallbacks {
             vm.keyboardShortcutPressed(event.keyCode)
         } else {
             super.dispatchKeyShortcutEvent(event)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        val from = intent?.extras?.getString("from") ?: ""
+        if (from == "login") {
+            finish()
         }
     }
 }

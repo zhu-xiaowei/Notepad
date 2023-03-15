@@ -76,6 +76,7 @@
     <string name="check_for_updates">检查更新</string>
     <string name="rtl_layout"> 从右至左 (RTL) 文本布局 </string>
     <string name="pref_title_font_type">字体类型</string>
+    <string name="user_name_is_null">用户名不能为空</string>
 
     <string-array name="sort_by_list">
         <item>由新至旧</item>

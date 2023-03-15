@@ -35,78 +35,90 @@ object PrefKeys {
     val ShowDoubleTapMessage = booleanPreferencesKey("show_double_tap_message")
     val FirstRun = intPreferencesKey("first-run")
     val FirstLoad = intPreferencesKey("first-load")
+    val userName = stringPreferencesKey("user_name")
+    val userId = stringPreferencesKey("user_id")
 }
 
 object Prefs {
     @Deprecated("Use ColorScheme or FontType instead")
-    object Theme: PreferenceRequest<String>(
+    object Theme : PreferenceRequest<String>(
         key = PrefKeys.Theme,
         defaultValue = "light-sans"
     )
 
-    object ColorScheme: PreferenceRequest<String>(
+    object ColorScheme : PreferenceRequest<String>(
         key = PrefKeys.ColorScheme,
         defaultValue = "system"
     )
 
-    object FontType: PreferenceRequest<String>(
+    object FontType : PreferenceRequest<String>(
         key = PrefKeys.FontType,
         defaultValue = "sans"
     )
 
-    object FontSize: PreferenceRequest<String>(
+    object FontSize : PreferenceRequest<String>(
         key = PrefKeys.FontSize,
         defaultValue = "normal"
     )
 
-    object SortBy: PreferenceRequest<String>(
+    object SortBy : PreferenceRequest<String>(
         key = PrefKeys.SortBy,
         defaultValue = "date"
     )
 
-    object ExportFilename: PreferenceRequest<String>(
+    object ExportFilename : PreferenceRequest<String>(
         key = PrefKeys.ExportFilename,
         defaultValue = "text-only"
     )
 
-    object ShowDialogs: PreferenceRequest<Boolean>(
+    object ShowDialogs : PreferenceRequest<Boolean>(
         key = PrefKeys.ShowDialogs,
         defaultValue = false
     )
 
-    object ShowDate: PreferenceRequest<Boolean>(
+    object ShowDate : PreferenceRequest<Boolean>(
         key = PrefKeys.ShowDate,
         defaultValue = false
     )
 
-    object DirectEdit: PreferenceRequest<Boolean>(
+    object DirectEdit : PreferenceRequest<Boolean>(
         key = PrefKeys.DirectEdit,
         defaultValue = false
     )
 
-    object Markdown: PreferenceRequest<Boolean>(
+    object Markdown : PreferenceRequest<Boolean>(
         key = PrefKeys.Markdown,
         defaultValue = false
     )
 
-    object RtlSupport: PreferenceRequest<Boolean>(
+    object RtlSupport : PreferenceRequest<Boolean>(
         key = PrefKeys.RtlSupport,
         defaultValue = false
     )
 
-    object ShowDoubleTapMessage: PreferenceRequest<Boolean>(
+    object ShowDoubleTapMessage : PreferenceRequest<Boolean>(
         key = PrefKeys.ShowDoubleTapMessage,
         defaultValue = true
     )
 
-    object FirstRun: PreferenceRequest<Int>(
+    object FirstRun : PreferenceRequest<Int>(
         key = PrefKeys.FirstRun,
         defaultValue = 0
     )
 
-    object FirstLoad: PreferenceRequest<Int>(
+    object FirstLoad : PreferenceRequest<Int>(
         key = PrefKeys.FirstLoad,
         defaultValue = 0
+    )
+
+    object UserName : PreferenceRequest<String>(
+        key = PrefKeys.userName,
+        defaultValue = ""
+    )
+
+    object UserId : PreferenceRequest<String>(
+        key = PrefKeys.userId,
+        defaultValue = ""
     )
 }
 

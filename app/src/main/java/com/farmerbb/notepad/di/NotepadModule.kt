@@ -20,7 +20,6 @@ import com.farmerbb.notepad.Database
 import com.farmerbb.notepad.data.NotepadRepository
 import com.farmerbb.notepad.model.NoteMetadata
 import com.farmerbb.notepad.usecase.artVandelayModule
-import com.farmerbb.notepad.usecase.dataMigratorModule
 import com.farmerbb.notepad.usecase.keyboardShortcutsModule
 import com.farmerbb.notepad.usecase.systemThemeModule
 import com.farmerbb.notepad.usecase.toasterModule
@@ -38,7 +37,7 @@ import org.koin.dsl.module
 val notepadModule = module {
     includes(
         viewModelModule,
-        dataMigratorModule,
+//        dataMigratorModule,
         toasterModule,
         artVandelayModule,
         keyboardShortcutsModule,
@@ -57,7 +56,7 @@ private fun provideDatabase(context: Context) = Database(
     NoteMetadataAdapter = NoteMetadata.Adapter(dateAdapter = DateAdapter)
 )
 
-object DateAdapter: ColumnAdapter<Date, Long> {
+object DateAdapter : ColumnAdapter<Date, Long> {
     override fun decode(databaseValue: Long) = Date(databaseValue)
     override fun encode(value: Date) = value.time
 }
