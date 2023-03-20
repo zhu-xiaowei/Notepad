@@ -60,7 +60,7 @@ android {
 
     signingConfigs {
         create("release") {
-            if(System.getenv("KSTOREFILE") != null) {
+            if (System.getenv("KSTOREFILE") != null) {
                 storeFile = File(System.getenv("KSTOREFILE"))
             }
 
@@ -72,7 +72,7 @@ android {
 
     buildTypes {
         debug {
-            applicationIdSuffix = ".debug"
+//            applicationIdSuffix = ".debug"
             manifestPlaceholders["appName"] = "@string/app_name_debug"
         }
 
@@ -87,7 +87,8 @@ android {
             applicationVariants.all {
                 outputs.map { it as BaseVariantOutputImpl }
                     .forEach { output ->
-                        output.outputFileName = "${project.parent?.name}-${defaultConfig.versionName}.apk"
+                        output.outputFileName =
+                            "${project.parent?.name}-${defaultConfig.versionName}.apk"
                     }
             }
         }
@@ -112,4 +113,5 @@ dependencies {
     implementation(libs.sqldelight)
     implementation(libs.systemuicontroller)
     debugImplementation(libs.compose.ui.tooling)
+    implementation("software.aws.solution:clickstream:0.3.0")
 }

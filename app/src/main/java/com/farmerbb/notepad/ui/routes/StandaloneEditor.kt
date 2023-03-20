@@ -93,7 +93,7 @@ private fun StandaloneEditor(
     }
     val onShareClick: () -> Unit = {
         onDismiss()
-        vm.shareNote(text)
+        vm.shareNote(text = text)
     }
     val onBack: () -> Unit = {
         if (text.isNotEmpty()) onSaveClick() else onExit()
@@ -113,7 +113,7 @@ private fun StandaloneEditor(
         )
     }
 
-    if(showSaveDialog) {
+    if (showSaveDialog) {
         SaveDialog(
             onConfirm = {
                 showSaveDialog = false

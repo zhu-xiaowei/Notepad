@@ -31,7 +31,7 @@ fun NoteListMenu(
     onMoreClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onImportClick: () -> Unit,
-    onAboutClick: () -> Unit
+    onLogoutClick: () -> Unit
 ) {
     Box {
         MoreButton(onMoreClick)
@@ -41,7 +41,7 @@ fun NoteListMenu(
         ) {
             MenuItem(R.string.action_settings, onSettingsClick)
             MenuItem(R.string.import_notes, onImportClick)
-            MenuItem(R.string.dialog_about_title, onAboutClick)
+            MenuItem(R.string.dialog_exit_title, onLogoutClick)
         }
     }
 }

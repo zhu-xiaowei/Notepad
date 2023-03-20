@@ -22,12 +22,14 @@ import android.content.Intent
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.amazonaws.solution.clickstream.ClickstreamAnalytics
+import com.amazonaws.solution.clickstream.ClickstreamEvent
+import com.amazonaws.solution.clickstream.ClickstreamUserAttribute
 import com.farmerbb.notepad.R
 import com.farmerbb.notepad.data.NotepadRepository
 import com.farmerbb.notepad.data.PreferenceManager.Companion.prefs
 import com.farmerbb.notepad.model.*
 import com.farmerbb.notepad.usecase.ArtVandelay
-import com.farmerbb.notepad.usecase.KeyboardShortcuts
 import com.farmerbb.notepad.usecase.SystemTheme
 import com.farmerbb.notepad.usecase.Toaster
 import com.farmerbb.notepad.utils.checkForUpdates
@@ -53,11 +55,8 @@ class NotepadViewModel(
     val dataStoreManager: DataStoreManager,
     private val toaster: Toaster,
     private val artVandelay: ArtVandelay,
-    private val keyboardShortcuts: KeyboardShortcuts,
     systemTheme: SystemTheme
 ) : ViewModel() {
-
-    /*********************** Data ***********************/
 
     private val _noteState = MutableStateFlow(Note())
     val noteState: StateFlow<Note> = _noteState
@@ -78,8 +77,105 @@ class NotepadViewModel(
     private val _savedDraftId = MutableStateFlow<Long?>(null)
     val savedDraftId: StateFlow<Long?> = _savedDraftId
     private var savedDraftIdJob: Job? = null
-
     private var isEditing = false
+
+
+    /*********************** Event record start ***********************/
+    fun saveUser(userName: String) = viewModelScope.launch(Dispatchers.IO) {
+        dataStoreManager.editPreference(
+            key = PrefKeys.userName,
+            newValue = userName
+        )
+        val userId = UUID.randomUUID().toString()
+        dataStoreManager.editPreference(
+            key = PrefKeys.userId,
+            newValue = userId
+        )
+//        val userAttribute = ClickstreamUserAttribute.Builder()
+//            .userId(userId)
+//            .add("_user_name", userName)
+//            .build()
+//        ClickstreamAnalytics.addUserAttributes(userAttribute)
+//        ClickstreamAnalytics.recordEvent("user_login")
+    }
+
+    fun addButtonClick() {
+//        ClickstreamAnalytics.recordEvent("add_button_click")
+    }
+
+    fun saveNote(
+        id: Long,
+        text: String,
+        onSuccess: (Long) -> Unit = {}
+    ) = viewModelScope.launch(Dispatchers.IO) {
+        text.checkLength {
+            repo.saveNote(id, text) {
+                toaster.toast(R.string.note_saved)
+                onSuccess(it)
+            }
+        }
+//        if (id == -1L) {
+//            ClickstreamAnalytics.recordEvent("note_create")
+//        }
+    }
+
+    fun shareNote(id: Long = -1, text: String) = viewModelScope.launch {
+        text.checkLength {
+            context.showShareSheet(text)
+        }
+//        val event = ClickstreamEvent.builder()
+//            .name("note_share")
+//            .add("note_id", id.toInt())
+//            .build()
+//        ClickstreamAnalytics.recordEvent(event)
+    }
+
+    fun exportSingleNote(
+        id: Long = -1,
+        metadata: NoteMetadata,
+        text: String,
+        filenameFormat: FilenameFormat
+    ) = viewModelScope.launch {
+        text.checkLength {
+            artVandelay.exportSingleNote(
+                metadata,
+                filenameFormat,
+                { saveExportedNote(it, text) }
+            ) {
+                viewModelScope.launch {
+                    toaster.toast(R.string.note_exported_to)
+                }
+            }
+        }
+//        val event = ClickstreamEvent.builder()
+//            .name("note_export")
+//            .add("note_id", id.toInt())
+//            .build()
+//        ClickstreamAnalytics.recordEvent(event)
+    }
+
+    fun printNote(id: Long, text: String) {
+//        val event = ClickstreamEvent.builder()
+//            .name("note_print")
+//            .add("note_id", id.toInt())
+//            .add("note_text", text)
+//            .build()
+//        ClickstreamAnalytics.recordEvent(event)
+    }
+
+    fun logout() = viewModelScope.launch(Dispatchers.IO) {
+        dataStoreManager.editPreference(
+            key = PrefKeys.userId,
+            newValue = ""
+        )
+        dataStoreManager.editPreference(
+            key = PrefKeys.userName,
+            newValue = ""
+        )
+    }
+
+    /*********************** Event record end ***********************/
+
 
     /*********************** UI Operations ***********************/
 
@@ -122,11 +218,6 @@ class NotepadViewModel(
         toaster.toastIf(condition, text, block)
     }
 
-    fun shareNote(text: String) = viewModelScope.launch {
-        text.checkLength {
-            context.showShareSheet(text)
-        }
-    }
 
     fun checkForUpdates() = context.checkForUpdates()
 
@@ -189,19 +280,6 @@ class NotepadViewModel(
         repo.deleteNote(id) {
             toaster.toast(R.string.note_deleted)
             onSuccess()
-        }
-    }
-
-    fun saveNote(
-        id: Long,
-        text: String,
-        onSuccess: (Long) -> Unit = {}
-    ) = viewModelScope.launch(Dispatchers.IO) {
-        text.checkLength {
-            repo.saveNote(id, text) {
-                toaster.toast(R.string.note_saved)
-                onSuccess(it)
-            }
         }
     }
 
@@ -287,7 +365,7 @@ class NotepadViewModel(
 
         if (hydratedNotes.size == 1) {
             val note = hydratedNotes.first()
-            exportSingleNote(note.metadata, note.text, filenameFormat)
+            exportSingleNote(note.id, note.metadata, note.text, filenameFormat)
             return@launch
         }
 
@@ -303,23 +381,6 @@ class NotepadViewModel(
         }
     }
 
-    fun exportSingleNote(
-        metadata: NoteMetadata,
-        text: String,
-        filenameFormat: FilenameFormat
-    ) = viewModelScope.launch {
-        text.checkLength {
-            artVandelay.exportSingleNote(
-                metadata,
-                filenameFormat,
-                { saveExportedNote(it, text) }
-            ) {
-                viewModelScope.launch {
-                    toaster.toast(R.string.note_exported_to)
-                }
-            }
-        }
-    }
 
     private fun saveImportedNote(
         input: InputStream
@@ -360,23 +421,8 @@ class NotepadViewModel(
         } ?: onLoad(null)
     }
 
-    fun saveUserName(userName: String) = viewModelScope.launch(Dispatchers.IO) {
-        dataStoreManager.editPreference(
-            key = PrefKeys.userName,
-            newValue = userName
-        )
-    }
-
-    fun saveUserId() = viewModelScope.launch(Dispatchers.IO) {
-        dataStoreManager.editPreference(
-            key = PrefKeys.userId,
-            newValue = UUID.randomUUID().toString()
-        )
-    }
 
     suspend fun getUserName(): String {
-//        val first = dataStoreManager.dataStore.data.first()
-//        return first[PrefKeys.userName] ?: ""
         return dataStoreManager.getPreference(Prefs.UserName)
     }
 
@@ -389,10 +435,6 @@ class NotepadViewModel(
         else -> onSuccess()
     }
 
-
-    fun keyboardShortcutPressed(keyCode: Int) = keyboardShortcuts.pressed(keyCode)
-    fun registerKeyboardShortcuts(vararg mappings: Pair<Int, () -> Unit>) =
-        keyboardShortcuts.register(*mappings)
 }
 
 val viewModelModule = module {
@@ -403,7 +445,6 @@ val viewModelModule = module {
             dataStoreManager = get(),
             toaster = get(),
             artVandelay = get(),
-            keyboardShortcuts = get(),
             systemTheme = get()
         )
     }

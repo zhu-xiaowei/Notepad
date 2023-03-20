@@ -32,12 +32,13 @@
     <string name="action_sort_by">Sort notes by</string>
     <string name="action_export_filename">Exported filename</string>
     <string name="app_name">Notepad</string>
-    <string name="app_name_debug">Notepad (Debug)</string>
+    <string name="app_name_debug">Notepad</string>
     <string name="cab_note_selected">%d note selected</string>
     <string name="cab_notes_selected">%d notes selected</string>
     <string name="changes_discarded">Changes discarded</string>
     <string name="dialog_about_message">Notepad: a simple note-taking app\n\n&#169; %d Braden Farmer\nApp logo by Tobaloidee</string>
     <string name="dialog_about_title">About Notepad</string>
+    <string name="dialog_exit_title">Logout</string>
     <string name="dialog_are_you_sure">Are you sure?</string>
     <string name="dialog_delete_button_title">Delete note</string>
     <string name="dialog_delete_button_title_plural">Delete notes</string>

@@ -16,16 +16,25 @@
 package com.farmerbb.notepad.android
 
 import android.app.Application
+import android.util.Log
+import com.amazonaws.solution.clickstream.ClickstreamAnalytics
+import com.amplifyframework.AmplifyException
 import com.farmerbb.notepad.di.notepadModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 
-class NotepadApplication: Application() {
+class NotepadApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         startKoin {
             androidContext(this@NotepadApplication)
             modules(notepadModule)
         }
+//        try {
+//            ClickstreamAnalytics.init(this)
+//            Log.i("Notepad", "Initialized ClickstreamAnalytics")
+//        } catch (error: AmplifyException) {
+//            Log.e("Notepad", "Could not initialize ClickstreamAnalytics", error)
+//        }
     }
 }

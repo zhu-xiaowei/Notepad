@@ -43,6 +43,7 @@
         android:label="${appName}"
         android:theme="@style/Theme.Notepad"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
         tools:ignore="AppLinkUrlError">
 
         <activity-alias

@@ -45,7 +45,9 @@ class NotepadActivity : ComponentActivity(), FSAFActivityCallbacks {
         }
         fileChooser.setCallbacks(this)
         setContent {
-            NotepadComposeAppRoute()
+            NotepadComposeAppRoute(onLogout = {
+                startActivity(Intent(this@NotepadActivity, LoginActivity::class.java))
+            })
         }
     }
 
@@ -78,14 +80,6 @@ class NotepadActivity : ComponentActivity(), FSAFActivityCallbacks {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         fileChooser.onActivityResult(requestCode, resultCode, data)
-    }
-
-    override fun dispatchKeyShortcutEvent(event: KeyEvent): Boolean {
-        return if (event.action == KeyEvent.ACTION_DOWN && event.isCtrlPressed) {
-            vm.keyboardShortcutPressed(event.keyCode)
-        } else {
-            super.dispatchKeyShortcutEvent(event)
-        }
     }
 
     override fun onNewIntent(intent: Intent?) {

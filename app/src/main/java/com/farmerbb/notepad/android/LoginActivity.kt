@@ -19,7 +19,6 @@ package com.farmerbb.notepad.android
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Process.killProcess
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,7 +26,6 @@ import com.farmerbb.notepad.R
 import com.farmerbb.notepad.ui.routes.LoginRoute
 import com.farmerbb.notepad.viewmodel.NotepadViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.system.exitProcess
 
 class LoginActivity : ComponentActivity() {
     private val vm: NotepadViewModel by viewModel()
@@ -39,8 +37,7 @@ class LoginActivity : ComponentActivity() {
                 if (it.isEmpty()) {
                     Toast.makeText(this, R.string.user_name_is_null, Toast.LENGTH_SHORT).show()
                 } else {
-                    vm.saveUserName(userName = it)
-                    vm.saveUserId()
+                    vm.saveUser(userName = it)
                     startActivity(Intent(this, NotepadActivity::class.java))
                     finish()
                 }

@@ -18,38 +18,18 @@
 package com.farmerbb.notepad.ui.routes
 
 import android.annotation.SuppressLint
-import android.view.KeyEvent
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.Divider
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
-import androidx.compose.material.TopAppBar
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -67,27 +47,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.farmerbb.notepad.R
 import com.farmerbb.notepad.model.NavState
-import com.farmerbb.notepad.model.NavState.Edit
-import com.farmerbb.notepad.model.NavState.Empty
-import com.farmerbb.notepad.model.NavState.View
+import com.farmerbb.notepad.model.NavState.*
 import com.farmerbb.notepad.model.NoteMetadata
 import com.farmerbb.notepad.model.navStateSaver
-import com.farmerbb.notepad.ui.components.AboutDialog
-import com.farmerbb.notepad.ui.components.AppBarText
-import com.farmerbb.notepad.ui.components.BackButton
-import com.farmerbb.notepad.ui.components.DeleteButton
-import com.farmerbb.notepad.ui.components.DeleteDialog
-import com.farmerbb.notepad.ui.components.EditButton
-import com.farmerbb.notepad.ui.components.ExportButton
-import com.farmerbb.notepad.ui.components.FirstRunDialog
-import com.farmerbb.notepad.ui.components.FirstViewDialog
-import com.farmerbb.notepad.ui.components.MultiSelectButton
-import com.farmerbb.notepad.ui.components.NoteListMenu
-import com.farmerbb.notepad.ui.components.NoteViewEditMenu
-import com.farmerbb.notepad.ui.components.NotepadTheme
-import com.farmerbb.notepad.ui.components.SaveButton
-import com.farmerbb.notepad.ui.components.SaveDialog
-import com.farmerbb.notepad.ui.components.SelectAllButton
+import com.farmerbb.notepad.ui.components.*
 import com.farmerbb.notepad.ui.content.EditNoteContent
 import com.farmerbb.notepad.ui.content.NoteListContent
 import com.farmerbb.notepad.ui.content.ViewNoteContent
@@ -98,7 +61,7 @@ import com.zachklipp.richtext.ui.printing.rememberPrintableController
 import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun NotepadComposeAppRoute() {
+fun NotepadComposeAppRoute(onLogout: () -> Unit) {
     val vm: NotepadViewModel = getViewModel()
     val configuration = LocalConfiguration.current
 
@@ -120,7 +83,8 @@ fun NotepadComposeAppRoute() {
             initState = when (draftId) {
                 -1L -> Empty
                 else -> Edit(draftId)
-            }
+            },
+            onLogout = onLogout
         )
     }
 }
@@ -130,7 +94,8 @@ fun NotepadComposeAppRoute() {
 private fun NotepadComposeApp(
     vm: NotepadViewModel = getViewModel(),
     isMultiPane: Boolean = false,
-    initState: NavState = Empty
+    initState: NavState = Empty,
+    onLogout: () -> Unit
 ) {
     /*********************** Data ***********************/
 
@@ -204,6 +169,7 @@ private fun NotepadComposeApp(
         vm.saveNote(note.id, text, onSaveComplete)
     }
     val onPrint: () -> Unit = {
+        vm.printNote(note.id, note.text)
         isPrinting = true
         printController.print(printJobTitle)
     }
@@ -228,15 +194,14 @@ private fun NotepadComposeApp(
     }
     val onShareClick: (String) -> Unit = {
         onDismiss()
-        vm.shareNote(it)
+        vm.shareNote(note.id, it)
     }
     val onExportClick: (NoteMetadata, String) -> Unit = { metadata, exportedText ->
         onDismiss()
-        vm.exportSingleNote(metadata, exportedText, filenameFormat)
+        vm.exportSingleNote(note.id, metadata, exportedText, filenameFormat)
     }
     val onPrintClick: () -> Unit = {
         onDismiss()
-
         vm.showToastIf(text.isEmpty(), R.string.empty_note) {
             when (navState) {
                 is Edit -> vm.saveDraft { onPrint() }
@@ -421,13 +386,6 @@ private fun NotepadComposeApp(
                 }
             }
 
-            vm.registerKeyboardShortcuts(
-                KeyEvent.KEYCODE_N to {
-                    vm.clearSelectedNotes()
-                    navState = Edit()
-                }
-            )
-
             if (!multiSelectEnabled) {
                 title = if (userName.isNotEmpty()) {
                     "Welcome: $userName"
@@ -454,9 +412,10 @@ private fun NotepadComposeApp(
                             onDismiss()
                             vm.importNotes()
                         },
-                        onAboutClick = {
+                        onLogoutClick = {
                             onDismiss()
-                            showAboutDialog = true
+                            vm.logout()
+                            onLogout()
                         }
                     )
                 }
@@ -481,12 +440,6 @@ private fun NotepadComposeApp(
                     showFirstViewDialog = true
                 }
             }
-
-            vm.registerKeyboardShortcuts(
-                KeyEvent.KEYCODE_E to { navState = Edit(state.id) },
-                KeyEvent.KEYCODE_D to onDeleteClick,
-                KeyEvent.KEYCODE_H to { onShareClick(note.text) }
-            )
 
             if (!multiSelectEnabled) {
                 title = note.title
@@ -526,12 +479,6 @@ private fun NotepadComposeApp(
             LaunchedEffect(state.id) {
                 vm.getNote(state.id)
             }
-
-            vm.registerKeyboardShortcuts(
-                KeyEvent.KEYCODE_S to { vm.saveNote(note.id, text, vm::getNote) },
-                KeyEvent.KEYCODE_D to onDeleteClick,
-                KeyEvent.KEYCODE_H to { onShareClick(text) }
-            )
 
             if (!multiSelectEnabled) {
                 title = note.title.ifEmpty {
@@ -616,7 +563,10 @@ private fun NotepadComposeApp(
                 exit = scaleOut()
             ) {
                 FloatingActionButton(
-                    onClick = { navState = Edit() },
+                    onClick = {
+                        vm.addButtonClick()
+                        navState = Edit()
+                    },
                     backgroundColor = colorResource(id = R.color.primary_dark),
                     content = {
                         Icon(
