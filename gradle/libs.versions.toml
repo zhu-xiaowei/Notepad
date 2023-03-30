@@ -6,7 +6,7 @@ notepad-versionName = "3.0.3"
 
 # Android SDK
 android-compileSdk = "33"
-android-gradlePlugin = "7.3.0"
+android-gradlePlugin = "7.4.1"
 android-minSdk = "21"
 android-targetSdk = "31"
 

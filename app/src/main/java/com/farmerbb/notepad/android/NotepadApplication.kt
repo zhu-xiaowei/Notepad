@@ -30,6 +30,7 @@ class NotepadApplication : Application() {
             androidContext(this@NotepadApplication)
             modules(notepadModule)
         }
+
 //        try {
 //            ClickstreamAnalytics.init(this)
 //            Log.i("Notepad", "Initialized ClickstreamAnalytics")

@@ -169,7 +169,7 @@ private fun NotepadComposeApp(
         vm.saveNote(note.id, text, onSaveComplete)
     }
     val onPrint: () -> Unit = {
-        vm.printNote(note.id, note.text)
+        vm.printNote(note.id)
         isPrinting = true
         printController.print(printJobTitle)
     }
@@ -198,7 +198,7 @@ private fun NotepadComposeApp(
     }
     val onExportClick: (NoteMetadata, String) -> Unit = { metadata, exportedText ->
         onDismiss()
-        vm.exportSingleNote(note.id, metadata, exportedText, filenameFormat)
+        vm.exportNote(note.id, metadata, exportedText, filenameFormat)
     }
     val onPrintClick: () -> Unit = {
         onDismiss()

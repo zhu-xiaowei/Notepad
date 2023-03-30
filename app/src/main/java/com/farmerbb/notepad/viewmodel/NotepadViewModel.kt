@@ -17,6 +17,7 @@
 
 package com.farmerbb.notepad.viewmodel
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
 import androidx.annotation.StringRes
@@ -80,8 +81,8 @@ class NotepadViewModel(
     private var isEditing = false
 
 
-    /*********************** Event record start ***********************/
-    fun saveUser(userName: String) = viewModelScope.launch(Dispatchers.IO) {
+    /*********************** Event record ***********************/
+    fun userLogin(userName: String) = viewModelScope.launch(Dispatchers.IO) {
         dataStoreManager.editPreference(
             key = PrefKeys.userName,
             newValue = userName
@@ -91,6 +92,7 @@ class NotepadViewModel(
             key = PrefKeys.userId,
             newValue = userId
         )
+
 //        val userAttribute = ClickstreamUserAttribute.Builder()
 //            .userId(userId)
 //            .add("_user_name", userName)
@@ -114,6 +116,7 @@ class NotepadViewModel(
                 onSuccess(it)
             }
         }
+
 //        if (id == -1L) {
 //            ClickstreamAnalytics.recordEvent("note_create")
 //        }
@@ -123,6 +126,7 @@ class NotepadViewModel(
         text.checkLength {
             context.showShareSheet(text)
         }
+
 //        val event = ClickstreamEvent.builder()
 //            .name("note_share")
 //            .add("note_id", id.toInt())
@@ -130,7 +134,7 @@ class NotepadViewModel(
 //        ClickstreamAnalytics.recordEvent(event)
     }
 
-    fun exportSingleNote(
+    fun exportNote(
         id: Long = -1,
         metadata: NoteMetadata,
         text: String,
@@ -147,6 +151,7 @@ class NotepadViewModel(
                 }
             }
         }
+
 //        val event = ClickstreamEvent.builder()
 //            .name("note_export")
 //            .add("note_id", id.toInt())
@@ -154,11 +159,10 @@ class NotepadViewModel(
 //        ClickstreamAnalytics.recordEvent(event)
     }
 
-    fun printNote(id: Long, text: String) {
+    fun printNote(id: Long) {
 //        val event = ClickstreamEvent.builder()
 //            .name("note_print")
 //            .add("note_id", id.toInt())
-//            .add("note_text", text)
 //            .build()
 //        ClickstreamAnalytics.recordEvent(event)
     }
@@ -173,8 +177,6 @@ class NotepadViewModel(
             newValue = ""
         )
     }
-
-    /*********************** Event record end ***********************/
 
 
     /*********************** UI Operations ***********************/
@@ -365,7 +367,7 @@ class NotepadViewModel(
 
         if (hydratedNotes.size == 1) {
             val note = hydratedNotes.first()
-            exportSingleNote(note.id, note.metadata, note.text, filenameFormat)
+            exportNote(note.id, note.metadata, note.text, filenameFormat)
             return@launch
         }
 
@@ -402,6 +404,7 @@ class NotepadViewModel(
         }
     }
 
+    @SuppressLint("Recycle")
     fun loadFileFromIntent(
         intent: Intent,
         onLoad: (String?) -> Unit

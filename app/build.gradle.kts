@@ -113,5 +113,5 @@ dependencies {
     implementation(libs.sqldelight)
     implementation(libs.systemuicontroller)
     debugImplementation(libs.compose.ui.tooling)
-    implementation("software.aws.solution:clickstream:0.3.0")
+//    implementation("software.aws.solution:clickstream:0.3.0")
 }

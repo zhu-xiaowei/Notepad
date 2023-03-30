@@ -37,7 +37,7 @@ class LoginActivity : ComponentActivity() {
                 if (it.isEmpty()) {
                     Toast.makeText(this, R.string.user_name_is_null, Toast.LENGTH_SHORT).show()
                 } else {
-                    vm.saveUser(userName = it)
+                    vm.userLogin(userName = it)
                     startActivity(Intent(this, NotepadActivity::class.java))
                     finish()
                 }
