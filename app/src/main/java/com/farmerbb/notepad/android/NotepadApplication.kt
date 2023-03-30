@@ -16,9 +16,9 @@
 package com.farmerbb.notepad.android
 
 import android.app.Application
-import android.util.Log
-import com.amazonaws.solution.clickstream.ClickstreamAnalytics
-import com.amplifyframework.AmplifyException
+//import android.util.Log
+//import com.amazonaws.solution.clickstream.ClickstreamAnalytics
+//import com.amplifyframework.AmplifyException
 import com.farmerbb.notepad.di.notepadModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin

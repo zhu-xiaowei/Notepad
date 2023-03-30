@@ -23,9 +23,9 @@ import android.content.Intent
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.amazonaws.solution.clickstream.ClickstreamAnalytics
-import com.amazonaws.solution.clickstream.ClickstreamEvent
-import com.amazonaws.solution.clickstream.ClickstreamUserAttribute
+//import com.amazonaws.solution.clickstream.ClickstreamAnalytics
+//import com.amazonaws.solution.clickstream.ClickstreamEvent
+//import com.amazonaws.solution.clickstream.ClickstreamUserAttribute
 import com.farmerbb.notepad.R
 import com.farmerbb.notepad.data.NotepadRepository
 import com.farmerbb.notepad.data.PreferenceManager.Companion.prefs
