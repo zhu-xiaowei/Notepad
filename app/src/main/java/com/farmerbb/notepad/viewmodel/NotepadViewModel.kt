@@ -93,16 +93,16 @@ class NotepadViewModel(
             newValue = userId
         )
 
-//        val userAttribute = ClickstreamUserAttribute.Builder()
-//            .userId(userId)
-//            .add("_user_name", userName)
-//            .build()
-//        ClickstreamAnalytics.addUserAttributes(userAttribute)
-//        ClickstreamAnalytics.recordEvent("user_login")
+        val userAttribute = ClickstreamUserAttribute.Builder()
+            .userId(userId)
+            .add("_user_name", userName)
+            .build()
+        ClickstreamAnalytics.addUserAttributes(userAttribute)
+        ClickstreamAnalytics.recordEvent("user_login")
     }
 
     fun addButtonClick() {
-//        ClickstreamAnalytics.recordEvent("add_button_click")
+        ClickstreamAnalytics.recordEvent("add_button_click")
     }
 
     fun saveNote(
@@ -117,9 +117,9 @@ class NotepadViewModel(
             }
         }
 
-//        if (id == -1L) {
-//            ClickstreamAnalytics.recordEvent("note_create")
-//        }
+        if (id == -1L) {
+            ClickstreamAnalytics.recordEvent("note_create")
+        }
     }
 
     fun shareNote(id: Long = -1, text: String) = viewModelScope.launch {
@@ -127,11 +127,11 @@ class NotepadViewModel(
             context.showShareSheet(text)
         }
 
-//        val event = ClickstreamEvent.builder()
-//            .name("note_share")
-//            .add("note_id", id.toInt())
-//            .build()
-//        ClickstreamAnalytics.recordEvent(event)
+        val event = ClickstreamEvent.builder()
+            .name("note_share")
+            .add("note_id", id.toInt())
+            .build()
+        ClickstreamAnalytics.recordEvent(event)
     }
 
     fun exportNote(
@@ -152,19 +152,19 @@ class NotepadViewModel(
             }
         }
 
-//        val event = ClickstreamEvent.builder()
-//            .name("note_export")
-//            .add("note_id", id.toInt())
-//            .build()
-//        ClickstreamAnalytics.recordEvent(event)
+        val event = ClickstreamEvent.builder()
+            .name("note_export")
+            .add("note_id", id.toInt())
+            .build()
+        ClickstreamAnalytics.recordEvent(event)
     }
 
     fun printNote(id: Long) {
-//        val event = ClickstreamEvent.builder()
-//            .name("note_print")
-//            .add("note_id", id.toInt())
-//            .build()
-//        ClickstreamAnalytics.recordEvent(event)
+        val event = ClickstreamEvent.builder()
+            .name("note_print")
+            .add("note_id", id.toInt())
+            .build()
+        ClickstreamAnalytics.recordEvent(event)
     }
 
     fun logout() = viewModelScope.launch(Dispatchers.IO) {

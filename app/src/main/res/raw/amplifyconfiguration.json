@@ -1,0 +1,13 @@
+{
+  "analytics": {
+    "plugins": {
+      "awsClickstreamPlugin": {
+        "appId": "1:203301274692:android:f4a3b24a929eb98e03e811",
+        "endpoint": "http://cs-se-serve-1qtj719j88vwn-1291141553.ap-southeast-1.elb.amazonaws.com/collect",
+        "isCompressEvents": false,
+        "autoFlushEventsInterval": 10000,
+        "isTrackAppExceptionEvents": true
+      }
+    }
+  }
+}

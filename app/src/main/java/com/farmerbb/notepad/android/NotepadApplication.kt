@@ -31,11 +31,11 @@ class NotepadApplication : Application() {
             modules(notepadModule)
         }
 
-//        try {
-//            ClickstreamAnalytics.init(this)
-//            Log.i("Notepad", "Initialized ClickstreamAnalytics")
-//        } catch (error: AmplifyException) {
-//            Log.e("Notepad", "Could not initialize ClickstreamAnalytics", error)
-//        }
+        try {
+            ClickstreamAnalytics.init(this)
+            Log.i("Notepad", "Initialized ClickstreamAnalytics")
+        } catch (error: AmplifyException) {
+            Log.e("Notepad", "Could not initialize ClickstreamAnalytics", error)
+        }
     }
 }
