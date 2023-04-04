@@ -92,7 +92,9 @@ class NotepadViewModel(
             key = PrefKeys.userId,
             newValue = userId
         )
-
+        /**
+         * following code is for record user login event.
+         */
 //        val userAttribute = ClickstreamUserAttribute.Builder()
 //            .userId(userId)
 //            .add("_user_name", userName)
@@ -102,6 +104,9 @@ class NotepadViewModel(
     }
 
     fun addButtonClick() {
+        /**
+         * following code is for record add_button_click event.
+         */
 //        ClickstreamAnalytics.recordEvent("add_button_click")
     }
 
@@ -116,7 +121,9 @@ class NotepadViewModel(
                 onSuccess(it)
             }
         }
-
+        /**
+         * following code is for record note_create event.
+         */
 //        if (id == -1L) {
 //            ClickstreamAnalytics.recordEvent("note_create")
 //        }
@@ -126,7 +133,9 @@ class NotepadViewModel(
         text.checkLength {
             context.showShareSheet(text)
         }
-
+        /**
+         * following code is for record note_share event.
+         */
 //        val event = ClickstreamEvent.builder()
 //            .name("note_share")
 //            .add("note_id", id.toInt())
@@ -151,7 +160,9 @@ class NotepadViewModel(
                 }
             }
         }
-
+        /**
+         * following code is for record note_export event.
+         */
 //        val event = ClickstreamEvent.builder()
 //            .name("note_export")
 //            .add("note_id", id.toInt())
@@ -160,6 +171,9 @@ class NotepadViewModel(
     }
 
     fun printNote(id: Long) {
+        /**
+         * following code is for record note_print event.
+         */
 //        val event = ClickstreamEvent.builder()
 //            .name("note_print")
 //            .add("note_id", id.toInt())
