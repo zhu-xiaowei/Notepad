@@ -20,6 +20,7 @@ package com.farmerbb.notepad.viewmodel
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
+import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -36,6 +37,8 @@ import com.farmerbb.notepad.usecase.Toaster
 import com.farmerbb.notepad.utils.checkForUpdates
 import com.farmerbb.notepad.utils.safeGetOrDefault
 import com.farmerbb.notepad.utils.showShareSheet
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.logEvent
 import de.schnettler.datastore.manager.DataStoreManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
@@ -61,6 +64,7 @@ class NotepadViewModel(
 
     private val _noteState = MutableStateFlow(Note())
     val noteState: StateFlow<Note> = _noteState
+    lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private val _text = MutableStateFlow("")
     val text: StateFlow<String> = _text
@@ -101,6 +105,9 @@ class NotepadViewModel(
 //            .build()
 //        ClickstreamAnalytics.addUserAttributes(userAttribute)
 //        ClickstreamAnalytics.recordEvent("user_login")
+        firebaseAnalytics.setUserId(userId)
+        firebaseAnalytics.setUserProperty("_user_name", userName)
+        firebaseAnalytics.logEvent("user_login", null)
     }
 
     fun addButtonClick() {
@@ -108,6 +115,7 @@ class NotepadViewModel(
          * following code is for record add_button_click event.
          */
 //        ClickstreamAnalytics.recordEvent("add_button_click")
+        firebaseAnalytics.logEvent("add_button_click", null)
     }
 
     fun saveNote(
@@ -124,9 +132,10 @@ class NotepadViewModel(
         /**
          * following code is for record note_create event.
          */
-//        if (id == -1L) {
+        if (id == -1L) {
 //            ClickstreamAnalytics.recordEvent("note_create")
-//        }
+            firebaseAnalytics.logEvent("note_create", null)
+        }
     }
 
     fun shareNote(id: Long = -1, text: String) = viewModelScope.launch {
@@ -141,6 +150,9 @@ class NotepadViewModel(
 //            .add("note_id", id.toInt())
 //            .build()
 //        ClickstreamAnalytics.recordEvent(event)
+        firebaseAnalytics.logEvent("note_share") {
+            param("note_id", id)
+        }
     }
 
     fun exportNote(
@@ -168,6 +180,9 @@ class NotepadViewModel(
 //            .add("note_id", id.toInt())
 //            .build()
 //        ClickstreamAnalytics.recordEvent(event)
+        firebaseAnalytics.logEvent("note_export") {
+            param("note_id", id)
+        }
     }
 
     fun printNote(id: Long) {
@@ -179,6 +194,9 @@ class NotepadViewModel(
 //            .add("note_id", id.toInt())
 //            .build()
 //        ClickstreamAnalytics.recordEvent(event)
+        firebaseAnalytics.logEvent("note_print") {
+            param("note_id", id)
+        }
     }
 
     fun logout() = viewModelScope.launch(Dispatchers.IO) {

@@ -4,6 +4,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("com.squareup.sqldelight")
+    id("com.google.gms.google-services")
 }
 
 repositories {
@@ -114,4 +115,5 @@ dependencies {
     implementation(libs.systemuicontroller)
     debugImplementation(libs.compose.ui.tooling)
 //    implementation("software.aws.solution:clickstream:0.3.0")
+    implementation("com.google.firebase:firebase-analytics-ktx:21.2.2")
 }

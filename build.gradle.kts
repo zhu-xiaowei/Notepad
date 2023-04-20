@@ -10,6 +10,7 @@ buildscript {
         classpath(libs.gradle.android)
         classpath(libs.gradle.kotlin)
         classpath(libs.gradle.sqldelight)
+        classpath("com.google.gms:google-services:4.3.15")
     }
 }
 
