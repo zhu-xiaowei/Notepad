@@ -106,6 +106,7 @@ class NotepadViewModel(
 //        ClickstreamAnalytics.addUserAttributes(userAttribute)
 //        ClickstreamAnalytics.recordEvent("user_login")
         firebaseAnalytics.setUserId(userId)
+        firebaseAnalytics.setSessionTimeoutDuration(20000)
         firebaseAnalytics.setUserProperty("_user_name", userName)
         firebaseAnalytics.logEvent("user_login", null)
     }
