@@ -23,6 +23,7 @@ import android.content.Intent
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bytedance.applog.AppLog
 //import com.amazonaws.solution.clickstream.ClickstreamAnalytics
 //import com.amazonaws.solution.clickstream.ClickstreamEvent
 //import com.amazonaws.solution.clickstream.ClickstreamUserAttribute
@@ -43,6 +44,8 @@ import kotlinx.coroutines.flow.*
 import okio.buffer
 import okio.sink
 import okio.source
+import org.json.JSONException
+import org.json.JSONObject
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -101,6 +104,17 @@ class NotepadViewModel(
 //            .build()
 //        ClickstreamAnalytics.addUserAttributes(userAttribute)
 //        ClickstreamAnalytics.recordEvent("user_login")
+        AppLog.setUserUniqueID("{{USER_UNIQUE_ID}}")
+
+        val paramsObj = JSONObject()
+        try {
+            paramsObj.put("_user_name", userName)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+        }
+        AppLog.profileSet(paramsObj)
+
+        AppLog.onEventV3("user_login")
     }
 
     fun addButtonClick() {

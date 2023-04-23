@@ -113,5 +113,8 @@ dependencies {
     implementation(libs.sqldelight)
     implementation(libs.systemuicontroller)
     debugImplementation(libs.compose.ui.tooling)
+    implementation ("com.bytedance.applog:RangersAppLog-All-cn:6.15.1")
+    debugImplementation("com.bytedance.applog:RangersAppLog-DevTools:2.2.3")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.61")
 //    implementation("software.aws.solution:clickstream:0.3.0")
 }

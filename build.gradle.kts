@@ -22,6 +22,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven("https://artifact.bytedance.com/repository/Volcengine/")
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }

@@ -15,13 +15,18 @@
 
 package com.farmerbb.notepad.android
 
-import android.app.Application
 //import android.util.Log
 //import com.amazonaws.solution.clickstream.ClickstreamAnalytics
 //import com.amplifyframework.AmplifyException
+
+import android.app.Application
+import com.bytedance.applog.AppLog
+import com.bytedance.applog.InitConfig
+import com.bytedance.applog.util.UriConstants
 import com.farmerbb.notepad.di.notepadModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
+
 
 class NotepadApplication : Application() {
     override fun onCreate() {
@@ -38,5 +43,14 @@ class NotepadApplication : Application() {
 //        } catch (error: AmplifyException) {
 //            Log.e("Notepad", "Could not initialize ClickstreamAnalytics", error)
 //        }
+
+        val config = InitConfig("yourAPPID", "yourCHANNEL")
+        // 设置数据上送地址
+        // 设置数据上送地址
+        config.setUriConfig(UriConstants.DEFAULT)
+        config.isAutoTrackEnabled = true // 全埋点开关，true开启，false关闭
+        config.isLogEnable = true // true:开启日志，参考4.3节设置logger，false:关闭日志
+        AppLog.setEncryptAndCompress(false) // 加密开关，true开启，false关闭
+        AppLog.init(this, config)
     }
 }
