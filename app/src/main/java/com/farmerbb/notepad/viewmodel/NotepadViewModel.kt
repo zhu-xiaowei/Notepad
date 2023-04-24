@@ -108,6 +108,9 @@ class NotepadViewModel(
         firebaseAnalytics.setUserId(userId)
         firebaseAnalytics.setSessionTimeoutDuration(20000)
         firebaseAnalytics.setUserProperty("_user_name", userName)
+        firebaseAnalytics.setUserProperty("user_age", "12")
+        firebaseAnalytics.setUserProperty("user_bool", "true")
+        firebaseAnalytics.setUserProperty("user_double", "12.33")
         firebaseAnalytics.logEvent("user_login", null)
     }
 
@@ -153,6 +156,9 @@ class NotepadViewModel(
 //        ClickstreamAnalytics.recordEvent(event)
         firebaseAnalytics.logEvent("note_share") {
             param("note_id", id)
+            param("note_id1", "name")
+            param("note_id2", 12)
+            param("note_id3", 12.33)
         }
     }
 
@@ -181,8 +187,15 @@ class NotepadViewModel(
 //            .add("note_id", id.toInt())
 //            .build()
 //        ClickstreamAnalytics.recordEvent(event)
+        val bundle = Bundle()
+        bundle.putInt("putInt",12)
+        bundle.putBoolean("putBoolean",true)
+        bundle.putFloat("putFloat",12.3f)
+        bundle.putDouble("putDouble",3.1415323)
+        bundle.putLong("putLong",4342323)
+        bundle.putString("putString","32323")
         firebaseAnalytics.logEvent("note_export") {
-            param("note_id", id)
+            param("bundle_value",bundle)
         }
     }
 
