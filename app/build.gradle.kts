@@ -113,5 +113,9 @@ dependencies {
     implementation(libs.sqldelight)
     implementation(libs.systemuicontroller)
     debugImplementation(libs.compose.ui.tooling)
-    implementation("software.aws.solution:clickstream:0.3.0")
+//    implementation("software.aws.solution:clickstream:0.3.0")
+    implementation(files("libs/clickstream-release.aar"))
+    implementation("com.amplifyframework:core:1.37.2")
+    implementation("com.amazonaws:aws-android-sdk-mobile-client:2.51.0")
+    implementation("com.squareup.okhttp3:okhttp:4.9.1")
 }

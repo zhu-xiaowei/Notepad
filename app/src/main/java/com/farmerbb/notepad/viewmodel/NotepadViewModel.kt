@@ -23,9 +23,6 @@ import android.content.Intent
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.amazonaws.solution.clickstream.ClickstreamAnalytics
-import com.amazonaws.solution.clickstream.ClickstreamEvent
-import com.amazonaws.solution.clickstream.ClickstreamUserAttribute
 import com.farmerbb.notepad.R
 import com.farmerbb.notepad.data.NotepadRepository
 import com.farmerbb.notepad.data.PreferenceManager.Companion.prefs
@@ -46,6 +43,9 @@ import okio.source
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import software.aws.solution.clickstream.ClickstreamAnalytics
+import software.aws.solution.clickstream.ClickstreamEvent
+import software.aws.solution.clickstream.ClickstreamUserAttribute
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.*
@@ -93,8 +93,8 @@ class NotepadViewModel(
             newValue = userId
         )
 
+        ClickstreamAnalytics.setUserId(userId)
         val userAttribute = ClickstreamUserAttribute.Builder()
-            .userId(userId)
             .add("_user_name", userName)
             .build()
         ClickstreamAnalytics.addUserAttributes(userAttribute)
