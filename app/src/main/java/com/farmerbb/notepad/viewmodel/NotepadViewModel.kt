@@ -82,6 +82,59 @@ class NotepadViewModel(
 
 
     /*********************** Event record ***********************/
+    fun shareNote(id: Long = -1, text: String) = viewModelScope.launch {
+        text.checkLength {
+            context.showShareSheet(text)
+        }
+        /**
+         * following code is for record note_share event.
+         */
+//        val event = ClickstreamEvent.builder()
+//            .name("note_share")
+//            .add("note_id", id.toInt())
+//            .build()
+//        ClickstreamAnalytics.recordEvent(event)
+    }
+
+    fun printNote(id: Long) {
+        /**
+         * following code is for record note_print event.
+         */
+//        val event = ClickstreamEvent.builder()
+//            .name("note_print")
+//            .add("note_id", id.toInt())
+//            .build()
+//        ClickstreamAnalytics.recordEvent(event)
+    }
+
+
+    fun exportNote(
+        id: Long = -1,
+        metadata: NoteMetadata,
+        text: String,
+        filenameFormat: FilenameFormat
+    ) = viewModelScope.launch {
+        text.checkLength {
+            artVandelay.exportSingleNote(
+                metadata,
+                filenameFormat,
+                { saveExportedNote(it, text) }
+            ) {
+                viewModelScope.launch {
+                    toaster.toast(R.string.note_exported_to)
+                }
+            }
+        }
+        /**
+         * following code is for record note_export event.
+         */
+//        val event = ClickstreamEvent.builder()
+//            .name("note_export")
+//            .add("note_id", id.toInt())
+//            .build()
+//        ClickstreamAnalytics.recordEvent(event)
+    }
+
     fun userLogin(userName: String) = viewModelScope.launch(Dispatchers.IO) {
         dataStoreManager.editPreference(
             key = PrefKeys.userName,
@@ -127,58 +180,6 @@ class NotepadViewModel(
 //        if (id == -1L) {
 //            ClickstreamAnalytics.recordEvent("note_create")
 //        }
-    }
-
-    fun shareNote(id: Long = -1, text: String) = viewModelScope.launch {
-        text.checkLength {
-            context.showShareSheet(text)
-        }
-        /**
-         * following code is for record note_share event.
-         */
-//        val event = ClickstreamEvent.builder()
-//            .name("note_share")
-//            .add("note_id", id.toInt())
-//            .build()
-//        ClickstreamAnalytics.recordEvent(event)
-    }
-
-    fun exportNote(
-        id: Long = -1,
-        metadata: NoteMetadata,
-        text: String,
-        filenameFormat: FilenameFormat
-    ) = viewModelScope.launch {
-        text.checkLength {
-            artVandelay.exportSingleNote(
-                metadata,
-                filenameFormat,
-                { saveExportedNote(it, text) }
-            ) {
-                viewModelScope.launch {
-                    toaster.toast(R.string.note_exported_to)
-                }
-            }
-        }
-        /**
-         * following code is for record note_export event.
-         */
-//        val event = ClickstreamEvent.builder()
-//            .name("note_export")
-//            .add("note_id", id.toInt())
-//            .build()
-//        ClickstreamAnalytics.recordEvent(event)
-    }
-
-    fun printNote(id: Long) {
-        /**
-         * following code is for record note_print event.
-         */
-//        val event = ClickstreamEvent.builder()
-//            .name("note_print")
-//            .add("note_id", id.toInt())
-//            .build()
-//        ClickstreamAnalytics.recordEvent(event)
     }
 
     fun logout() = viewModelScope.launch(Dispatchers.IO) {
