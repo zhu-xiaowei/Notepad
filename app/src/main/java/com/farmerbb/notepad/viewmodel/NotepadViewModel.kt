@@ -96,6 +96,7 @@ class NotepadViewModel(
 //        ClickstreamAnalytics.recordEvent(event)
     }
 
+
     fun printNote(id: Long) {
         /**
          * following code is for record note_print event.
@@ -106,7 +107,6 @@ class NotepadViewModel(
 //            .build()
 //        ClickstreamAnalytics.recordEvent(event)
     }
-
 
     fun exportNote(
         id: Long = -1,
