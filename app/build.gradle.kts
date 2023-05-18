@@ -114,5 +114,5 @@ dependencies {
     implementation(libs.systemuicontroller)
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.10"))
     debugImplementation(libs.compose.ui.tooling)
-//    implementation("software.aws.solution:clickstream:0.4.0")
+//    implementation("software.aws.solution:clickstream:0.4.1")
 }
