@@ -1,10 +1,15 @@
 import com.android.build.gradle.internal.api.BaseVariantOutputImpl
+import java.util.Properties
 
 plugins {
     id("com.android.application")
     id("kotlin-android")
     id("com.squareup.sqldelight")
 }
+val signingProps = Properties().apply {
+    load(rootProject.file("signing.properties").inputStream())
+}
+
 
 repositories {
     google()
@@ -60,13 +65,10 @@ android {
 
     signingConfigs {
         create("release") {
-            if (System.getenv("KSTOREFILE") != null) {
-                storeFile = File(System.getenv("KSTOREFILE"))
-            }
-
-            storePassword = System.getenv("KSTOREPWD")
-            keyAlias = System.getenv("KEYALIAS")
-            keyPassword = System.getenv("KEYPWD")
+            storeFile = rootProject.file(signingProps.getProperty("storeFile"))
+            storePassword = signingProps.getProperty("storePassword")
+            keyAlias = signingProps.getProperty("keyAlias")
+            keyPassword = signingProps.getProperty("keyPassword")
         }
     }
 
@@ -114,5 +116,5 @@ dependencies {
     implementation(libs.systemuicontroller)
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.10"))
     debugImplementation(libs.compose.ui.tooling)
-//    implementation("software.aws.solution:clickstream:0.4.1")
+    implementation("software.aws.solution:clickstream:0.4.1")
 }

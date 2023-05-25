@@ -9,3 +9,5 @@
 /app/build
 output.json
 output-metadata.json
+*.jks
+signing.properties

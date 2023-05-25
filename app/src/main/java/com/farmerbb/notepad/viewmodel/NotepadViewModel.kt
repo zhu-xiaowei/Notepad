@@ -43,9 +43,9 @@ import okio.source
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
-//import software.aws.solution.clickstream.ClickstreamAnalytics
-//import software.aws.solution.clickstream.ClickstreamEvent
-//import software.aws.solution.clickstream.ClickstreamUserAttribute
+import software.aws.solution.clickstream.ClickstreamAnalytics
+import software.aws.solution.clickstream.ClickstreamEvent
+import software.aws.solution.clickstream.ClickstreamUserAttribute
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.*
@@ -89,11 +89,11 @@ class NotepadViewModel(
         /**
          * following code is for record note_share event.
          */
-//        val event = ClickstreamEvent.builder()
-//            .name("note_share")
-//            .add("note_id", id.toInt())
-//            .build()
-//        ClickstreamAnalytics.recordEvent(event)
+        val event = ClickstreamEvent.builder()
+            .name("note_share")
+            .add("note_id", id.toInt())
+            .build()
+        ClickstreamAnalytics.recordEvent(event)
     }
 
 
@@ -101,11 +101,11 @@ class NotepadViewModel(
         /**
          * following code is for record note_print event.
          */
-//        val event = ClickstreamEvent.builder()
-//            .name("note_print")
-//            .add("note_id", id.toInt())
-//            .build()
-//        ClickstreamAnalytics.recordEvent(event)
+        val event = ClickstreamEvent.builder()
+            .name("note_print")
+            .add("note_id", id.toInt())
+            .build()
+        ClickstreamAnalytics.recordEvent(event)
     }
 
     fun exportNote(
@@ -128,11 +128,11 @@ class NotepadViewModel(
         /**
          * following code is for record note_export event.
          */
-//        val event = ClickstreamEvent.builder()
-//            .name("note_export")
-//            .add("note_id", id.toInt())
-//            .build()
-//        ClickstreamAnalytics.recordEvent(event)
+        val event = ClickstreamEvent.builder()
+            .name("note_export")
+            .add("note_id", id.toInt())
+            .build()
+        ClickstreamAnalytics.recordEvent(event)
     }
 
     fun userLogin(userName: String) = viewModelScope.launch(Dispatchers.IO) {
@@ -148,19 +148,19 @@ class NotepadViewModel(
         /**
          * following code is for record user login event.
          */
-//        ClickstreamAnalytics.setUserId(userId)
-//        val userAttribute = ClickstreamUserAttribute.Builder()
-//            .add("_user_name", userName)
-//            .build()
-//        ClickstreamAnalytics.addUserAttributes(userAttribute)
-//        ClickstreamAnalytics.recordEvent("user_login")
+        ClickstreamAnalytics.setUserId(userId)
+        val userAttribute = ClickstreamUserAttribute.Builder()
+            .add("_user_name", userName)
+            .build()
+        ClickstreamAnalytics.addUserAttributes(userAttribute)
+        ClickstreamAnalytics.recordEvent("user_login")
     }
 
     fun addButtonClick() {
         /**
          * following code is for record add_button_click event.
          */
-//        ClickstreamAnalytics.recordEvent("add_button_click")
+        ClickstreamAnalytics.recordEvent("add_button_click")
     }
 
     fun saveNote(
@@ -177,9 +177,9 @@ class NotepadViewModel(
         /**
          * following code is for record note_create event.
          */
-//        if (id == -1L) {
-//            ClickstreamAnalytics.recordEvent("note_create")
-//        }
+        if (id == -1L) {
+            ClickstreamAnalytics.recordEvent("note_create")
+        }
     }
 
     fun logout() = viewModelScope.launch(Dispatchers.IO) {
@@ -191,6 +191,8 @@ class NotepadViewModel(
             key = PrefKeys.userName,
             newValue = ""
         )
+        ClickstreamAnalytics.recordEvent("logout")
+        ClickstreamAnalytics.setUserId(null)
     }
 
 
@@ -198,28 +200,36 @@ class NotepadViewModel(
 
     fun setText(text: String) {
         _text.value = text
+        ClickstreamAnalytics.recordEvent("setText")
     }
 
     fun clearNote() {
         _noteState.value = Note()
         _text.value = ""
+        ClickstreamAnalytics.recordEvent("clearNote")
     }
 
     fun toggleSelectedNote(id: Long) {
         selectedNotes[id] = !selectedNotes.safeGetOrDefault(id, false)
         _selectedNotesFlow.tryEmit(selectedNotes.filterValues { it })
+        val event = ClickstreamEvent.builder()
+            .name("toggleSelectedNote")
+            .add("note_id", id.toInt())
+            .build()
+        ClickstreamAnalytics.recordEvent(event)
     }
 
     fun clearSelectedNotes() {
         selectedNotes.clear()
         _selectedNotesFlow.tryEmit(emptyMap())
+        ClickstreamAnalytics.recordEvent("clearSelectedNotes")
     }
 
     fun selectAllNotes(notes: List<NoteMetadata>) {
         notes.forEach {
             selectedNotes[it.metadataId] = true
         }
-
+        ClickstreamAnalytics.recordEvent("selectAllNotes")
         _selectedNotesFlow.tryEmit(selectedNotes.filterValues { it })
     }
 
@@ -283,7 +293,7 @@ class NotepadViewModel(
                     1 -> R.string.note_deleted
                     else -> R.string.notes_deleted
                 }
-
+                ClickstreamAnalytics.recordEvent("deleteSelectedNotes")
                 toaster.toast(toastId)
                 onSuccess()
             }
@@ -296,6 +306,7 @@ class NotepadViewModel(
     ) = viewModelScope.launch(Dispatchers.IO) {
         repo.deleteNote(id) {
             toaster.toast(R.string.note_deleted)
+            ClickstreamAnalytics.recordEvent("deleteNote")
             onSuccess()
         }
     }
@@ -315,6 +326,7 @@ class NotepadViewModel(
             with(noteState.value) {
                 repo.saveNote(id, text, date, draftText) { newId ->
                     getNote(newId)
+                    ClickstreamAnalytics.recordEvent("saveDraft")
                     onSuccess()
                 }
             }
@@ -324,7 +336,10 @@ class NotepadViewModel(
     fun deleteDraft() = viewModelScope.launch(Dispatchers.IO) {
         with(noteState.value) {
             when {
-                text.isEmpty() -> repo.deleteNote(id)
+                text.isEmpty() -> {
+                    repo.deleteNote(id)
+                    ClickstreamAnalytics.recordEvent("deleteDraft")
+                }
                 !isEditing -> repo.saveNote(id, text, date)
             }
         }
@@ -362,7 +377,7 @@ class NotepadViewModel(
             1 -> R.string.note_imported_successfully
             else -> R.string.notes_imported_successfully
         }
-
+        ClickstreamAnalytics.recordEvent("importNotes")
         viewModelScope.launch {
             toaster.toast(toastId)
         }
@@ -372,6 +387,7 @@ class NotepadViewModel(
         metadata: List<NoteMetadata>,
         filenameFormat: FilenameFormat
     ) = viewModelScope.launch(Dispatchers.IO) {
+        ClickstreamAnalytics.recordEvent("exportNotes")
         val hydratedNotes = repo.getNotes(
             metadata.filter {
                 selectedNotes.safeGetOrDefault(it.metadataId, false)
@@ -402,6 +418,7 @@ class NotepadViewModel(
     private fun saveImportedNote(
         input: InputStream
     ) = viewModelScope.launch(Dispatchers.IO) {
+        ClickstreamAnalytics.recordEvent("saveImportedNote")
         input.source().buffer().use {
             val text = it.readUtf8()
             if (text.isNotEmpty()) {
@@ -414,6 +431,7 @@ class NotepadViewModel(
         output: OutputStream,
         text: String
     ) = viewModelScope.launch(Dispatchers.IO) {
+        ClickstreamAnalytics.recordEvent("saveExportedNote")
         output.sink().buffer().use {
             it.writeUtf8(text)
         }
@@ -424,6 +442,7 @@ class NotepadViewModel(
         intent: Intent,
         onLoad: (String?) -> Unit
     ) = viewModelScope.launch(Dispatchers.IO) {
+        ClickstreamAnalytics.recordEvent("loadFileFromIntent")
         intent.data?.let { uri ->
             val input = context.contentResolver.openInputStream(uri) ?: run {
                 onLoad(null)
