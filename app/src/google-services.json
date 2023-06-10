@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "406109657730",
+    "project_id": "clickstream-uat-devicefarm",
+    "storage_bucket": "clickstream-uat-devicefarm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406109657730:android:be19177cae460b72bd729b",
+        "android_client_info": {
+          "package_name": "com.farmerbb.notepad"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "406109657730-gbccha4dnghei8jvqreabd9ut0mdrjb2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7BC1biSoZs7joWSOyuCyTiBhIyA-D2Vo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "406109657730-gbccha4dnghei8jvqreabd9ut0mdrjb2.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "406109657730-b2pc3s2kasii5s05octs9812184q79fq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "software.aws.solution.ModerneShopping"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

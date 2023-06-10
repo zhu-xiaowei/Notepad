@@ -121,9 +121,6 @@ class NotepadViewModel(
         ClickstreamAnalytics.recordEvent(event)
         firebaseAnalytics.logEvent("note_share") {
             param("note_id", id)
-            param("note_id1", "name")
-            param("note_id2", 12)
-            param("note_id3", 12.33)
         }
     }
 
@@ -169,15 +166,8 @@ class NotepadViewModel(
             .build()
         ClickstreamAnalytics.recordEvent(event)
 
-        val bundle = Bundle()
-        bundle.putInt("putInt", 12)
-        bundle.putBoolean("putBoolean", true)
-        bundle.putFloat("putFloat", 12.3f)
-        bundle.putDouble("putDouble", 3.1415323)
-        bundle.putLong("putLong", 4342323)
-        bundle.putString("putString", "32323")
         firebaseAnalytics.logEvent("note_export") {
-            param("bundle_value", bundle)
+            param("note_id", id)
         }
     }
 
@@ -202,11 +192,7 @@ class NotepadViewModel(
         ClickstreamAnalytics.recordEvent("user_login")
 
         firebaseAnalytics.setUserId(userId)
-        firebaseAnalytics.setSessionTimeoutDuration(20000)
         firebaseAnalytics.setUserProperty("_user_name", userName)
-        firebaseAnalytics.setUserProperty("user_age", "12")
-        firebaseAnalytics.setUserProperty("user_bool", "true")
-        firebaseAnalytics.setUserProperty("user_double", "12.33")
         firebaseAnalytics.logEvent("user_login", null)
     }
 
@@ -229,6 +215,9 @@ class NotepadViewModel(
         )
         ClickstreamAnalytics.recordEvent("logout")
         ClickstreamAnalytics.setUserId(null)
+
+        firebaseAnalytics.logEvent("logout", null)
+        firebaseAnalytics.setUserId(null)
     }
 
 
@@ -237,12 +226,14 @@ class NotepadViewModel(
     fun setText(text: String) {
         _text.value = text
         ClickstreamAnalytics.recordEvent("setText")
+        firebaseAnalytics.logEvent("setText", null)
     }
 
     fun clearNote() {
         _noteState.value = Note()
         _text.value = ""
         ClickstreamAnalytics.recordEvent("clearNote")
+        firebaseAnalytics.logEvent("clearNote", null)
     }
 
     fun toggleSelectedNote(id: Long) {
@@ -253,12 +244,17 @@ class NotepadViewModel(
             .add("note_id", id.toInt())
             .build()
         ClickstreamAnalytics.recordEvent(event)
+
+        firebaseAnalytics.logEvent("toggleSelectedNote") {
+            param("note_id", id)
+        }
     }
 
     fun clearSelectedNotes() {
         selectedNotes.clear()
         _selectedNotesFlow.tryEmit(emptyMap())
         ClickstreamAnalytics.recordEvent("clearSelectedNotes")
+        firebaseAnalytics.logEvent("clearSelectedNotes", null)
     }
 
     fun selectAllNotes(notes: List<NoteMetadata>) {
@@ -266,6 +262,7 @@ class NotepadViewModel(
             selectedNotes[it.metadataId] = true
         }
         ClickstreamAnalytics.recordEvent("selectAllNotes")
+        firebaseAnalytics.logEvent("selectAllNotes", null)
         _selectedNotesFlow.tryEmit(selectedNotes.filterValues { it })
     }
 
@@ -330,6 +327,7 @@ class NotepadViewModel(
                     else -> R.string.notes_deleted
                 }
                 ClickstreamAnalytics.recordEvent("deleteSelectedNotes")
+                firebaseAnalytics.logEvent("deleteSelectedNotes", null)
                 toaster.toast(toastId)
                 onSuccess()
             }
@@ -343,6 +341,7 @@ class NotepadViewModel(
         repo.deleteNote(id) {
             toaster.toast(R.string.note_deleted)
             ClickstreamAnalytics.recordEvent("deleteNote")
+            firebaseAnalytics.logEvent("deleteNote", null)
             onSuccess()
         }
     }
@@ -374,7 +373,6 @@ class NotepadViewModel(
             when {
                 text.isEmpty() -> {
                     repo.deleteNote(id)
-                    ClickstreamAnalytics.recordEvent("deleteDraft")
                 }
 
                 !isEditing -> repo.saveNote(id, text, date)
@@ -415,6 +413,7 @@ class NotepadViewModel(
             else -> R.string.notes_imported_successfully
         }
         ClickstreamAnalytics.recordEvent("importNotes")
+        firebaseAnalytics.logEvent("importNotes", null)
         viewModelScope.launch {
             toaster.toast(toastId)
         }
@@ -425,6 +424,7 @@ class NotepadViewModel(
         filenameFormat: FilenameFormat
     ) = viewModelScope.launch(Dispatchers.IO) {
         ClickstreamAnalytics.recordEvent("exportNotes")
+        firebaseAnalytics.logEvent("exportNotes", null)
         val hydratedNotes = repo.getNotes(
             metadata.filter {
                 selectedNotes.safeGetOrDefault(it.metadataId, false)
@@ -456,6 +456,7 @@ class NotepadViewModel(
         input: InputStream
     ) = viewModelScope.launch(Dispatchers.IO) {
         ClickstreamAnalytics.recordEvent("saveImportedNote")
+        firebaseAnalytics.logEvent("saveImportedNote", null)
         input.source().buffer().use {
             val text = it.readUtf8()
             if (text.isNotEmpty()) {
@@ -469,6 +470,7 @@ class NotepadViewModel(
         text: String
     ) = viewModelScope.launch(Dispatchers.IO) {
         ClickstreamAnalytics.recordEvent("saveExportedNote")
+        firebaseAnalytics.logEvent("saveExportedNote", null)
         output.sink().buffer().use {
             it.writeUtf8(text)
         }
@@ -480,6 +482,7 @@ class NotepadViewModel(
         onLoad: (String?) -> Unit
     ) = viewModelScope.launch(Dispatchers.IO) {
         ClickstreamAnalytics.recordEvent("loadFileFromIntent")
+        firebaseAnalytics.logEvent("loadFileFromIntent", null)
         intent.data?.let { uri ->
             val input = context.contentResolver.openInputStream(uri) ?: run {
                 onLoad(null)

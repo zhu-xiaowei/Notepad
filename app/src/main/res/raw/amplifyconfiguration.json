@@ -5,8 +5,8 @@
     "plugins": {
       "awsClickstreamPlugin": {
         "appId": "notepad",
-        "endpoint": "http://Click-Inges-11BMEQJY1XHH7-177087144.us-east-1.elb.amazonaws.com/collect",
-        "isCompressEvents": true,
+        "endpoint": "http://a2ec4e8df02adce41.awsglobalaccelerator.com/collect",
+        "isCompressEvents": false,
         "autoFlushEventsInterval": 10000,
         "isTrackAppExceptionEvents": false
       }
