@@ -20,6 +20,7 @@ package com.farmerbb.notepad.viewmodel
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
+import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,6 +34,8 @@ import com.farmerbb.notepad.usecase.Toaster
 import com.farmerbb.notepad.utils.checkForUpdates
 import com.farmerbb.notepad.utils.safeGetOrDefault
 import com.farmerbb.notepad.utils.showShareSheet
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.logEvent
 import de.schnettler.datastore.manager.DataStoreManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
@@ -61,6 +64,7 @@ class NotepadViewModel(
 
     private val _noteState = MutableStateFlow(Note())
     val noteState: StateFlow<Note> = _noteState
+    lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private val _text = MutableStateFlow("")
     val text: StateFlow<String> = _text
@@ -82,6 +86,27 @@ class NotepadViewModel(
 
 
     /*********************** Event record ***********************/
+
+    fun saveNote(
+        id: Long,
+        text: String,
+        onSuccess: (Long) -> Unit = {}
+    ) = viewModelScope.launch(Dispatchers.IO) {
+        text.checkLength {
+            repo.saveNote(id, text) {
+                toaster.toast(R.string.note_saved)
+                onSuccess(it)
+            }
+        }
+        /**
+         * following code is for record note_create event.
+         */
+        if (id == -1L) {
+            ClickstreamAnalytics.recordEvent("note_create")
+            firebaseAnalytics.logEvent("note_create", null)
+        }
+    }
+
     fun shareNote(id: Long = -1, text: String) = viewModelScope.launch {
         text.checkLength {
             context.showShareSheet(text)
@@ -94,6 +119,12 @@ class NotepadViewModel(
             .add("note_id", id.toInt())
             .build()
         ClickstreamAnalytics.recordEvent(event)
+        firebaseAnalytics.logEvent("note_share") {
+            param("note_id", id)
+            param("note_id1", "name")
+            param("note_id2", 12)
+            param("note_id3", 12.33)
+        }
     }
 
 
@@ -106,6 +137,10 @@ class NotepadViewModel(
             .add("note_id", id.toInt())
             .build()
         ClickstreamAnalytics.recordEvent(event)
+
+        firebaseAnalytics.logEvent("note_print") {
+            param("note_id", id)
+        }
     }
 
     fun exportNote(
@@ -133,6 +168,17 @@ class NotepadViewModel(
             .add("note_id", id.toInt())
             .build()
         ClickstreamAnalytics.recordEvent(event)
+
+        val bundle = Bundle()
+        bundle.putInt("putInt", 12)
+        bundle.putBoolean("putBoolean", true)
+        bundle.putFloat("putFloat", 12.3f)
+        bundle.putDouble("putDouble", 3.1415323)
+        bundle.putLong("putLong", 4342323)
+        bundle.putString("putString", "32323")
+        firebaseAnalytics.logEvent("note_export") {
+            param("bundle_value", bundle)
+        }
     }
 
     fun userLogin(userName: String) = viewModelScope.launch(Dispatchers.IO) {
@@ -154,6 +200,14 @@ class NotepadViewModel(
             .build()
         ClickstreamAnalytics.addUserAttributes(userAttribute)
         ClickstreamAnalytics.recordEvent("user_login")
+
+        firebaseAnalytics.setUserId(userId)
+        firebaseAnalytics.setSessionTimeoutDuration(20000)
+        firebaseAnalytics.setUserProperty("_user_name", userName)
+        firebaseAnalytics.setUserProperty("user_age", "12")
+        firebaseAnalytics.setUserProperty("user_bool", "true")
+        firebaseAnalytics.setUserProperty("user_double", "12.33")
+        firebaseAnalytics.logEvent("user_login", null)
     }
 
     fun addButtonClick() {
@@ -161,25 +215,7 @@ class NotepadViewModel(
          * following code is for record add_button_click event.
          */
         ClickstreamAnalytics.recordEvent("add_button_click")
-    }
-
-    fun saveNote(
-        id: Long,
-        text: String,
-        onSuccess: (Long) -> Unit = {}
-    ) = viewModelScope.launch(Dispatchers.IO) {
-        text.checkLength {
-            repo.saveNote(id, text) {
-                toaster.toast(R.string.note_saved)
-                onSuccess(it)
-            }
-        }
-        /**
-         * following code is for record note_create event.
-         */
-        if (id == -1L) {
-            ClickstreamAnalytics.recordEvent("note_create")
-        }
+        firebaseAnalytics.logEvent("add_button_click", null)
     }
 
     fun logout() = viewModelScope.launch(Dispatchers.IO) {
@@ -340,6 +376,7 @@ class NotepadViewModel(
                     repo.deleteNote(id)
                     ClickstreamAnalytics.recordEvent("deleteDraft")
                 }
+
                 !isEditing -> repo.saveNote(id, text, date)
             }
         }

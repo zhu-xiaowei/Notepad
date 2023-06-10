@@ -5,6 +5,7 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("com.squareup.sqldelight")
+    id("com.google.gms.google-services")
 }
 val signingProps = Properties().apply {
     load(rootProject.file("signing.properties").inputStream())
@@ -116,5 +117,6 @@ dependencies {
     implementation(libs.systemuicontroller)
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.10"))
     debugImplementation(libs.compose.ui.tooling)
-    implementation("software.aws.solution:clickstream:0.4.1")
+    implementation("software.aws.solution:clickstream:0.4.4")
+    implementation("com.google.firebase:firebase-analytics-ktx:21.3.0")
 }

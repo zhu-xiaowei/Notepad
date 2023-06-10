@@ -25,6 +25,8 @@ import androidx.activity.compose.setContent
 import com.farmerbb.notepad.R
 import com.farmerbb.notepad.ui.routes.LoginRoute
 import com.farmerbb.notepad.viewmodel.NotepadViewModel
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginActivity : ComponentActivity() {
@@ -37,6 +39,7 @@ class LoginActivity : ComponentActivity() {
                 if (it.isEmpty()) {
                     Toast.makeText(this, R.string.user_name_is_null, Toast.LENGTH_SHORT).show()
                 } else {
+                    vm.firebaseAnalytics = Firebase.analytics
                     vm.userLogin(userName = it)
                     startActivity(Intent(this, NotepadActivity::class.java))
                     finish()
