@@ -121,6 +121,7 @@ private fun NotepadComposeApp(
     val firstViewComplete by vm.prefs.firstViewComplete.collectAsState()
     val showDoubleTapMessage by vm.prefs.showDoubleTapMessage.collectAsState()
     val userName by vm.prefs.userName.collectAsState()
+    val allEventNumber by vm.prefs.allEventNumber.collectAsState()
 
     var navState by rememberSaveable(saver = navStateSaver) { mutableStateOf(initState) }
     var isPrinting by remember { mutableStateOf(false) }
@@ -215,9 +216,11 @@ private fun NotepadComposeApp(
                 multiSelectEnabled = false
                 vm.clearSelectedNotes()
             }
+
             navState is Edit && text.isNotEmpty() -> {
                 onSaveClick(false, updateNavState)
             }
+
             else -> navState = Empty
         }
     }
@@ -388,9 +391,9 @@ private fun NotepadComposeApp(
 
             if (!multiSelectEnabled) {
                 title = if (userName.isNotEmpty()) {
-                    "Welcome: $userName"
+                    "Welcome: $userName +$allEventNumber"
                 } else {
-                    stringResource(id = R.string.app_name)
+                    stringResource(id = R.string.app_name) + " +" + allEventNumber
                 }
                 backButton = null
                 actions = {

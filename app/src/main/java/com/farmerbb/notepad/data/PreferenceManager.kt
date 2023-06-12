@@ -96,6 +96,7 @@ class PreferenceManager private constructor(
     val firstViewComplete get() = Prefs.FirstLoad.mapToFlow(::toBoolean)
     val showDoubleTapMessage get() = Prefs.ShowDoubleTapMessage.asFlow
     val userName get() = Prefs.UserName.asFlow
+    val allEventNumber get() = Prefs.AllEventNumber.asFlow
 
     @Suppress("UNCHECKED_CAST")
     private fun <T, R> PreferenceRequest<T>.mapToFlow(transform: (value: T) -> R) =

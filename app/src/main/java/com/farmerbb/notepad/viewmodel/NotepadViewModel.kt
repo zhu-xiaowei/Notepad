@@ -84,6 +84,9 @@ class NotepadViewModel(
     private var savedDraftIdJob: Job? = null
     private var isEditing = false
 
+    companion object {
+        var allEventNumber = 0
+    }
 
     /*********************** Event record ***********************/
 
@@ -104,6 +107,7 @@ class NotepadViewModel(
         if (id == -1L) {
             ClickstreamAnalytics.recordEvent("note_create")
             firebaseAnalytics.logEvent("note_create", null)
+            addEventNumber()
         }
     }
 
@@ -122,6 +126,7 @@ class NotepadViewModel(
         firebaseAnalytics.logEvent("note_share") {
             param("note_id", id)
         }
+        addEventNumber()
     }
 
 
@@ -138,6 +143,7 @@ class NotepadViewModel(
         firebaseAnalytics.logEvent("note_print") {
             param("note_id", id)
         }
+        addEventNumber()
     }
 
     fun exportNote(
@@ -169,6 +175,7 @@ class NotepadViewModel(
         firebaseAnalytics.logEvent("note_export") {
             param("note_id", id)
         }
+        addEventNumber()
     }
 
     fun userLogin(userName: String) = viewModelScope.launch(Dispatchers.IO) {
@@ -194,6 +201,7 @@ class NotepadViewModel(
         firebaseAnalytics.setUserId(userId)
         firebaseAnalytics.setUserProperty("_user_name", userName)
         firebaseAnalytics.logEvent("user_login", null)
+        addEventNumber()
     }
 
     fun addButtonClick() {
@@ -202,6 +210,7 @@ class NotepadViewModel(
          */
         ClickstreamAnalytics.recordEvent("add_button_click")
         firebaseAnalytics.logEvent("add_button_click", null)
+        addEventNumber()
     }
 
     fun logout() = viewModelScope.launch(Dispatchers.IO) {
@@ -218,6 +227,7 @@ class NotepadViewModel(
 
         firebaseAnalytics.logEvent("logout", null)
         firebaseAnalytics.setUserId(null)
+        addEventNumber()
     }
 
 
@@ -227,6 +237,7 @@ class NotepadViewModel(
         _text.value = text
         ClickstreamAnalytics.recordEvent("setText")
         firebaseAnalytics.logEvent("setText", null)
+        addEventNumber()
     }
 
     fun clearNote() {
@@ -234,6 +245,7 @@ class NotepadViewModel(
         _text.value = ""
         ClickstreamAnalytics.recordEvent("clearNote")
         firebaseAnalytics.logEvent("clearNote", null)
+        addEventNumber()
     }
 
     fun toggleSelectedNote(id: Long) {
@@ -248,6 +260,7 @@ class NotepadViewModel(
         firebaseAnalytics.logEvent("toggleSelectedNote") {
             param("note_id", id)
         }
+        addEventNumber()
     }
 
     fun clearSelectedNotes() {
@@ -255,6 +268,7 @@ class NotepadViewModel(
         _selectedNotesFlow.tryEmit(emptyMap())
         ClickstreamAnalytics.recordEvent("clearSelectedNotes")
         firebaseAnalytics.logEvent("clearSelectedNotes", null)
+        addEventNumber()
     }
 
     fun selectAllNotes(notes: List<NoteMetadata>) {
@@ -263,6 +277,7 @@ class NotepadViewModel(
         }
         ClickstreamAnalytics.recordEvent("selectAllNotes")
         firebaseAnalytics.logEvent("selectAllNotes", null)
+        addEventNumber()
         _selectedNotesFlow.tryEmit(selectedNotes.filterValues { it })
     }
 
@@ -328,6 +343,7 @@ class NotepadViewModel(
                 }
                 ClickstreamAnalytics.recordEvent("deleteSelectedNotes")
                 firebaseAnalytics.logEvent("deleteSelectedNotes", null)
+                addEventNumber()
                 toaster.toast(toastId)
                 onSuccess()
             }
@@ -342,6 +358,7 @@ class NotepadViewModel(
             toaster.toast(R.string.note_deleted)
             ClickstreamAnalytics.recordEvent("deleteNote")
             firebaseAnalytics.logEvent("deleteNote", null)
+            addEventNumber()
             onSuccess()
         }
     }
@@ -362,6 +379,8 @@ class NotepadViewModel(
                 repo.saveNote(id, text, date, draftText) { newId ->
                     getNote(newId)
                     ClickstreamAnalytics.recordEvent("saveDraft")
+                    firebaseAnalytics.logEvent("saveDraft", null)
+                    addEventNumber()
                     onSuccess()
                 }
             }
@@ -414,6 +433,7 @@ class NotepadViewModel(
         }
         ClickstreamAnalytics.recordEvent("importNotes")
         firebaseAnalytics.logEvent("importNotes", null)
+        addEventNumber()
         viewModelScope.launch {
             toaster.toast(toastId)
         }
@@ -425,6 +445,7 @@ class NotepadViewModel(
     ) = viewModelScope.launch(Dispatchers.IO) {
         ClickstreamAnalytics.recordEvent("exportNotes")
         firebaseAnalytics.logEvent("exportNotes", null)
+        addEventNumber()
         val hydratedNotes = repo.getNotes(
             metadata.filter {
                 selectedNotes.safeGetOrDefault(it.metadataId, false)
@@ -457,6 +478,7 @@ class NotepadViewModel(
     ) = viewModelScope.launch(Dispatchers.IO) {
         ClickstreamAnalytics.recordEvent("saveImportedNote")
         firebaseAnalytics.logEvent("saveImportedNote", null)
+        addEventNumber()
         input.source().buffer().use {
             val text = it.readUtf8()
             if (text.isNotEmpty()) {
@@ -471,6 +493,7 @@ class NotepadViewModel(
     ) = viewModelScope.launch(Dispatchers.IO) {
         ClickstreamAnalytics.recordEvent("saveExportedNote")
         firebaseAnalytics.logEvent("saveExportedNote", null)
+        addEventNumber()
         output.sink().buffer().use {
             it.writeUtf8(text)
         }
@@ -483,6 +506,7 @@ class NotepadViewModel(
     ) = viewModelScope.launch(Dispatchers.IO) {
         ClickstreamAnalytics.recordEvent("loadFileFromIntent")
         firebaseAnalytics.logEvent("loadFileFromIntent", null)
+        addEventNumber()
         intent.data?.let { uri ->
             val input = context.contentResolver.openInputStream(uri) ?: run {
                 onLoad(null)
@@ -503,6 +527,10 @@ class NotepadViewModel(
         return dataStoreManager.getPreference(Prefs.UserName)
     }
 
+    suspend fun getAllEventNumber(): Int {
+        return dataStoreManager.getPreference(Prefs.AllEventNumber)
+    }
+
     /*********************** Miscellaneous ***********************/
 
     private suspend fun String.checkLength(
@@ -510,6 +538,14 @@ class NotepadViewModel(
     ) = when (length) {
         0 -> toaster.toast(R.string.empty_note)
         else -> onSuccess()
+    }
+
+    fun addEventNumber() = viewModelScope.launch(Dispatchers.IO) {
+        allEventNumber += 1
+        dataStoreManager.editPreference(
+            key = PrefKeys.allEventNumber,
+            newValue = allEventNumber
+        )
     }
 
 }

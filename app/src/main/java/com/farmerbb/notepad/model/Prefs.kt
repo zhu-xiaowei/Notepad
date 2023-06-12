@@ -37,6 +37,7 @@ object PrefKeys {
     val FirstLoad = intPreferencesKey("first-load")
     val userName = stringPreferencesKey("user_name")
     val userId = stringPreferencesKey("user_id")
+    val allEventNumber = intPreferencesKey("all_event_number")
 }
 
 object Prefs {
@@ -114,6 +115,11 @@ object Prefs {
     object UserName : PreferenceRequest<String>(
         key = PrefKeys.userName,
         defaultValue = ""
+    )
+
+    object AllEventNumber : PreferenceRequest<Int>(
+        key = PrefKeys.allEventNumber,
+        defaultValue = 0
     )
 
     object UserId : PreferenceRequest<String>(

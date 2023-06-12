@@ -43,6 +43,7 @@ class NotepadActivity : ComponentActivity(), FSAFActivityCallbacks {
         firebaseAnalytics = Firebase.analytics
         vm.firebaseAnalytics = firebaseAnalytics
         lifecycleScope.launch {
+            NotepadViewModel.allEventNumber = vm.getAllEventNumber()
             val userName = vm.getUserName()
             if (userName.isEmpty()) {
                 startActivity(Intent(this@NotepadActivity, LoginActivity::class.java))
