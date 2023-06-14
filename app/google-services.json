@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "178561888502",
-    "project_id": "notepad-4fe34",
-    "storage_bucket": "notepad-4fe34.appspot.com"
+    "project_number": "614504984236",
+    "project_id": "notepad-34ccc",
+    "storage_bucket": "notepad-34ccc.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:178561888502:android:25ff99ba80be75ed2afcd7",
+        "mobilesdk_app_id": "1:614504984236:android:e622d31ab38b4b05a1b909",
         "android_client_info": {
           "package_name": "com.farmerbb.notepad"
         }
       },
       "oauth_client": [
         {
-          "client_id": "178561888502-vlgsodlgldrrdmk84a66i1hq1d05q3f7.apps.googleusercontent.com",
+          "client_id": "614504984236-d8jigo3ublrc88gkjm8vtj0v9g6umem0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBjbk6KDsIZO7QN66UM-lff3UfJ-ZqMY0k"
+          "current_key": "AIzaSyADM79cjLTi4sLLCOtKbyJxGRdRJ2H0AVE"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "178561888502-vlgsodlgldrrdmk84a66i1hq1d05q3f7.apps.googleusercontent.com",
+              "client_id": "614504984236-d8jigo3ublrc88gkjm8vtj0v9g6umem0.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
