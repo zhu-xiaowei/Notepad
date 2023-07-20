@@ -27,9 +27,6 @@ import com.farmerbb.notepad.ui.routes.NotepadComposeAppRoute
 import com.farmerbb.notepad.viewmodel.NotepadViewModel
 import com.github.k1rakishou.fsaf.FileChooser
 import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -37,11 +34,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class NotepadActivity : ComponentActivity(), FSAFActivityCallbacks {
     private val vm: NotepadViewModel by viewModel()
     private val fileChooser: FileChooser = get()
-    private lateinit var firebaseAnalytics: FirebaseAnalytics
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        firebaseAnalytics = Firebase.analytics
-        vm.firebaseAnalytics = firebaseAnalytics
         lifecycleScope.launch {
             NotepadViewModel.allEventNumber = vm.getAllEventNumber()
             val userName = vm.getUserName()

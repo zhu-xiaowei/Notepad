@@ -20,7 +20,6 @@ package com.farmerbb.notepad.viewmodel
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
-import android.os.Bundle
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -34,8 +33,6 @@ import com.farmerbb.notepad.usecase.Toaster
 import com.farmerbb.notepad.utils.checkForUpdates
 import com.farmerbb.notepad.utils.safeGetOrDefault
 import com.farmerbb.notepad.utils.showShareSheet
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.logEvent
 import de.schnettler.datastore.manager.DataStoreManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
@@ -64,7 +61,6 @@ class NotepadViewModel(
 
     private val _noteState = MutableStateFlow(Note())
     val noteState: StateFlow<Note> = _noteState
-    lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private val _text = MutableStateFlow("")
     val text: StateFlow<String> = _text
@@ -113,10 +109,6 @@ class NotepadViewModel(
                 .add("event_uuid", uuid)
                 .build()
             ClickstreamAnalytics.recordEvent(event)
-            firebaseAnalytics.logEvent("note_create") {
-                param("event_timestamp", timestamp)
-                param("event_uuid", uuid)
-            }
             addEventNumber()
         }
     }
@@ -132,16 +124,11 @@ class NotepadViewModel(
         val uuid = UUID.randomUUID().toString()
         val event = ClickstreamEvent.builder()
             .name("note_share")
-            .add("note_id", id.toInt())
+            .add("note_id", id)
             .add("event_timestamp", timestamp)
             .add("event_uuid", uuid)
             .build()
         ClickstreamAnalytics.recordEvent(event)
-        firebaseAnalytics.logEvent("note_share") {
-            param("note_id", id)
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
         addEventNumber()
     }
 
@@ -154,17 +141,12 @@ class NotepadViewModel(
         val uuid = UUID.randomUUID().toString()
         val event = ClickstreamEvent.builder()
             .name("note_print")
-            .add("note_id", id.toInt())
+            .add("note_id", id)
             .add("event_timestamp", timestamp)
             .add("event_uuid", uuid)
             .build()
         ClickstreamAnalytics.recordEvent(event)
 
-        firebaseAnalytics.logEvent("note_print") {
-            param("note_id", id)
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
         addEventNumber()
     }
 
@@ -192,17 +174,12 @@ class NotepadViewModel(
         val uuid = UUID.randomUUID().toString()
         val event = ClickstreamEvent.builder()
             .name("note_export")
-            .add("note_id", id.toInt())
+            .add("note_id", id)
             .add("event_timestamp", timestamp)
             .add("event_uuid", uuid)
             .build()
         ClickstreamAnalytics.recordEvent(event)
 
-        firebaseAnalytics.logEvent("note_export") {
-            param("note_id", id)
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
         addEventNumber()
     }
 
@@ -232,13 +209,6 @@ class NotepadViewModel(
             .add("event_uuid", uuid)
             .build()
         ClickstreamAnalytics.recordEvent(event)
-
-        firebaseAnalytics.setUserId(userId)
-        firebaseAnalytics.setUserProperty("_user_name", userName)
-        firebaseAnalytics.logEvent("user_login") {
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
         addEventNumber()
     }
 
@@ -254,10 +224,6 @@ class NotepadViewModel(
             .add("event_uuid", uuid)
             .build()
         ClickstreamAnalytics.recordEvent(event)
-        firebaseAnalytics.logEvent("add_button_click") {
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
         addEventNumber()
     }
 
@@ -279,12 +245,6 @@ class NotepadViewModel(
             .build()
         ClickstreamAnalytics.recordEvent(event)
         ClickstreamAnalytics.setUserId(null)
-
-        firebaseAnalytics.logEvent("logout") {
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
-        firebaseAnalytics.setUserId(null)
         addEventNumber()
     }
 
@@ -301,10 +261,6 @@ class NotepadViewModel(
             .add("event_uuid", uuid)
             .build()
         ClickstreamAnalytics.recordEvent(event)
-        firebaseAnalytics.logEvent("setText") {
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
         addEventNumber()
     }
 
@@ -319,10 +275,6 @@ class NotepadViewModel(
             .add("event_uuid", uuid)
             .build()
         ClickstreamAnalytics.recordEvent(event)
-        firebaseAnalytics.logEvent("clearNote") {
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
         addEventNumber()
     }
 
@@ -333,17 +285,12 @@ class NotepadViewModel(
         val uuid = UUID.randomUUID().toString()
         val event = ClickstreamEvent.builder()
             .name("toggleSelectedNote")
-            .add("note_id", id.toInt())
+            .add("note_id", id)
             .add("event_timestamp", timestamp)
             .add("event_uuid", uuid)
             .build()
         ClickstreamAnalytics.recordEvent(event)
 
-        firebaseAnalytics.logEvent("toggleSelectedNote") {
-            param("note_id", id)
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
         addEventNumber()
     }
 
@@ -358,10 +305,6 @@ class NotepadViewModel(
             .add("event_uuid", uuid)
             .build()
         ClickstreamAnalytics.recordEvent(event)
-        firebaseAnalytics.logEvent("clearSelectedNotes") {
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
         addEventNumber()
     }
 
@@ -377,10 +320,6 @@ class NotepadViewModel(
             .add("event_uuid", uuid)
             .build()
         ClickstreamAnalytics.recordEvent(event)
-        firebaseAnalytics.logEvent("selectAllNotes") {
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
         addEventNumber()
         _selectedNotesFlow.tryEmit(selectedNotes.filterValues { it })
     }
@@ -453,10 +392,6 @@ class NotepadViewModel(
                     .add("event_uuid", uuid)
                     .build()
                 ClickstreamAnalytics.recordEvent(event)
-                firebaseAnalytics.logEvent("deleteSelectedNotes") {
-                    param("event_timestamp", timestamp)
-                    param("event_uuid", uuid)
-                }
                 addEventNumber()
                 toaster.toast(toastId)
                 onSuccess()
@@ -478,10 +413,6 @@ class NotepadViewModel(
                 .add("event_uuid", uuid)
                 .build()
             ClickstreamAnalytics.recordEvent(event)
-            firebaseAnalytics.logEvent("deleteNote") {
-                param("event_timestamp", timestamp)
-                param("event_uuid", uuid)
-            }
             addEventNumber()
             onSuccess()
         }
@@ -511,10 +442,6 @@ class NotepadViewModel(
                         .add("event_uuid", uuid)
                         .build()
                     ClickstreamAnalytics.recordEvent(event)
-                    firebaseAnalytics.logEvent("saveDraft") {
-                        param("event_timestamp", timestamp)
-                        param("event_uuid", uuid)
-                    }
                     addEventNumber()
                     onSuccess()
                 }
@@ -574,10 +501,6 @@ class NotepadViewModel(
             .add("event_uuid", uuid)
             .build()
         ClickstreamAnalytics.recordEvent(event)
-        firebaseAnalytics.logEvent("importNotes") {
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
         addEventNumber()
         viewModelScope.launch {
             toaster.toast(toastId)
@@ -596,10 +519,6 @@ class NotepadViewModel(
             .add("event_uuid", uuid)
             .build()
         ClickstreamAnalytics.recordEvent(event)
-        firebaseAnalytics.logEvent("exportNotes") {
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
         addEventNumber()
         val hydratedNotes = repo.getNotes(
             metadata.filter {
@@ -639,10 +558,6 @@ class NotepadViewModel(
             .add("event_uuid", uuid)
             .build()
         ClickstreamAnalytics.recordEvent(event)
-        firebaseAnalytics.logEvent("saveImportedNote") {
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
         addEventNumber()
         input.source().buffer().use {
             val text = it.readUtf8()
@@ -664,10 +579,6 @@ class NotepadViewModel(
             .add("event_uuid", uuid)
             .build()
         ClickstreamAnalytics.recordEvent(event)
-        firebaseAnalytics.logEvent("saveExportedNote") {
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
         addEventNumber()
         output.sink().buffer().use {
             it.writeUtf8(text)
@@ -687,10 +598,6 @@ class NotepadViewModel(
             .add("event_uuid", uuid)
             .build()
         ClickstreamAnalytics.recordEvent(event)
-        firebaseAnalytics.logEvent("loadFileFromIntent") {
-            param("event_timestamp", timestamp)
-            param("event_uuid", uuid)
-        }
         addEventNumber()
         intent.data?.let { uri ->
             val input = context.contentResolver.openInputStream(uri) ?: run {
