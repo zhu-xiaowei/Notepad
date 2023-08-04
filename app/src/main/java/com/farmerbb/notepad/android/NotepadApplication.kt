@@ -32,7 +32,7 @@ class NotepadApplication : Application() {
         }
 
         try {
-            ClickstreamAnalytics.init(this)
+            ClickstreamAnalytics.init(applicationContext)
             ClickstreamAnalytics.getClickStreamConfiguration().withLogEvents(true)
             Log.i("Notepad", "Initialized ClickstreamAnalytics")
         } catch (error: AmplifyException) {
