@@ -33,7 +33,9 @@ class NotepadApplication : Application() {
 
         try {
             ClickstreamAnalytics.init(applicationContext)
-            ClickstreamAnalytics.getClickStreamConfiguration().withLogEvents(true)
+            ClickstreamAnalytics.getClickStreamConfiguration()
+                .withLogEvents(true)
+                .withTrackScreenViewEvents(false)
             Log.i("Notepad", "Initialized ClickstreamAnalytics")
         } catch (error: AmplifyException) {
             Log.e("Notepad", "Could not initialize ClickstreamAnalytics", error)
