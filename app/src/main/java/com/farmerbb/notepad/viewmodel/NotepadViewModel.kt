@@ -106,8 +106,8 @@ class NotepadViewModel(
 //        ClickstreamAnalytics.addUserAttributes(userAttribute)
 //        ClickstreamAnalytics.recordEvent("user_login")
         firebaseAnalytics.setUserId(userId)
-        firebaseAnalytics.setSessionTimeoutDuration(20000)
-        firebaseAnalytics.setUserProperty("_user_name", userName)
+        firebaseAnalytics.setSessionTimeoutDuration(200000)
+        firebaseAnalytics.setUserProperty("user_name", userName)
         firebaseAnalytics.setUserProperty("user_age", "12")
         firebaseAnalytics.setUserProperty("user_bool", "true")
         firebaseAnalytics.setUserProperty("user_double", "12.33")
@@ -222,6 +222,7 @@ class NotepadViewModel(
             key = PrefKeys.userName,
             newValue = ""
         )
+        firebaseAnalytics.setUserId(null)
     }
 
 
