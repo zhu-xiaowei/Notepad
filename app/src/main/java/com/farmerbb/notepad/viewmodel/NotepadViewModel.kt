@@ -112,6 +112,34 @@ class NotepadViewModel(
         firebaseAnalytics.setUserProperty("user_bool", "true")
         firebaseAnalytics.setUserProperty("user_double", "12.33")
         firebaseAnalytics.logEvent("user_login", null)
+
+
+        val itemJeggings = Bundle().apply {
+            putString(FirebaseAnalytics.Param.ITEM_ID, "SKU_123")
+            putString(FirebaseAnalytics.Param.ITEM_NAME, "jeggings")
+            putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "pants")
+            putString(FirebaseAnalytics.Param.ITEM_VARIANT, "black")
+            putString(FirebaseAnalytics.Param.ITEM_BRAND, "Google")
+            putString("product_name", "Google")
+            putDouble(FirebaseAnalytics.Param.PRICE, 9.99)
+        }
+
+        val itemJeggings1 = Bundle().apply {
+            putString(FirebaseAnalytics.Param.ITEM_ID, "SKU_123")
+            putString(FirebaseAnalytics.Param.ITEM_NAME, "jeggings")
+            putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "pants")
+            putString(FirebaseAnalytics.Param.ITEM_VARIANT, "black")
+            putString(FirebaseAnalytics.Param.ITEM_BRAND, "Google")
+            putString("product_name", "Google")
+            putString(FirebaseAnalytics.Param.ITEM_CATEGORY, "Google")
+            putDouble(FirebaseAnalytics.Param.PRICE, 9.99)
+        }
+
+        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_ITEM) {
+            param(FirebaseAnalytics.Param.ITEM_LIST_ID, "L001")
+            param(FirebaseAnalytics.Param.ITEM_LIST_NAME, "Related products")
+            param(FirebaseAnalytics.Param.ITEMS, arrayOf(itemJeggings, itemJeggings1))
+        }
     }
 
     fun addButtonClick() {
@@ -188,14 +216,14 @@ class NotepadViewModel(
 //            .build()
 //        ClickstreamAnalytics.recordEvent(event)
         val bundle = Bundle()
-        bundle.putInt("putInt",12)
-        bundle.putBoolean("putBoolean",true)
-        bundle.putFloat("putFloat",12.3f)
-        bundle.putDouble("putDouble",3.1415323)
-        bundle.putLong("putLong",4342323)
-        bundle.putString("putString","32323")
+        bundle.putInt("putInt", 12)
+        bundle.putBoolean("putBoolean", true)
+        bundle.putFloat("putFloat", 12.3f)
+        bundle.putDouble("putDouble", 3.1415323)
+        bundle.putLong("putLong", 4342323)
+        bundle.putString("putString", "32323")
         firebaseAnalytics.logEvent("note_export") {
-            param("bundle_value",bundle)
+            param("bundle_value", bundle)
         }
     }
 
