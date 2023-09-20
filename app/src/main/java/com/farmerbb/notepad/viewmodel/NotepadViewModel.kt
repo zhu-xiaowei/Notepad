@@ -128,7 +128,7 @@ class NotepadViewModel(
         }
 
         val event = ClickstreamEvent.builder()
-            .name("note_share")
+            .name("1note_share")
             .add("note_id", id.toInt())
             .build()
         ClickstreamAnalytics.recordEvent(event)
