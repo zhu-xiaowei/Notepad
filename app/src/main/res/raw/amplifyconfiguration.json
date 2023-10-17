@@ -2,8 +2,8 @@
   "analytics": {
     "plugins": {
       "awsClickstreamPlugin": {
-        "appId": "test_release",
-        "endpoint": "http://Click-Inges-1H25ZOJOE5LGH-1595541665.us-east-1.elb.amazonaws.com/collect",
+        "appId": "shopping",
+        "endpoint": "http://Clicks-Inges-0TllbCXMHPxP-1112598039.us-east-1.elb.amazonaws.com/collect",
         "isCompressEvents": true,
         "autoFlushEventsInterval": 10000,
         "isTrackAppExceptionEvents": true
