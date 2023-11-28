@@ -45,10 +45,12 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import software.aws.solution.clickstream.ClickstreamAnalytics
 import software.aws.solution.clickstream.ClickstreamEvent
+import software.aws.solution.clickstream.ClickstreamItem
 import software.aws.solution.clickstream.ClickstreamUserAttribute
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.*
+
 
 class NotepadViewModel(
     private val context: Application,
@@ -126,10 +128,16 @@ class NotepadViewModel(
         text.checkLength {
             context.showShareSheet(text)
         }
+        val itemNote = ClickstreamItem.builder()
+            .add(ClickstreamAnalytics.Item.ITEM_ID, "123")
+            .add(ClickstreamAnalytics.Item.ITEM_NAME, "test_note")
+            .add("note_action_type", "note_share")
+            .build()
 
         val event = ClickstreamEvent.builder()
-            .name("1note_share")
+            .name("note_share")
             .add("note_id", id.toInt())
+            .setItems(arrayOf(itemNote))
             .build()
         ClickstreamAnalytics.recordEvent(event)
     }
