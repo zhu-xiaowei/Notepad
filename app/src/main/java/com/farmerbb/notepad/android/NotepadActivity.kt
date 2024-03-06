@@ -19,7 +19,6 @@ package com.farmerbb.notepad.android
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.lifecycle.lifecycleScope
@@ -30,6 +29,10 @@ import com.github.k1rakishou.fsaf.callback.FSAFActivityCallbacks
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.io.IOException
+import java.net.ServerSocket
+import java.net.Socket
+
 
 class NotepadActivity : ComponentActivity(), FSAFActivityCallbacks {
     private val vm: NotepadViewModel by viewModel()
@@ -49,6 +52,23 @@ class NotepadActivity : ComponentActivity(), FSAFActivityCallbacks {
                 startActivity(Intent(this@NotepadActivity, LoginActivity::class.java))
             })
         }
+        var serverSocket: ServerSocket
+
+        Thread {
+            try {
+                serverSocket = ServerSocket(8080)
+                while (true) {
+                    // 等待客户端连接
+                    val socket: Socket = serverSocket.accept()
+                    // 处理请求
+                    print(socket)
+                    // 关闭连接
+                    socket.close()
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }.start()
     }
 
     override fun onStart() {
