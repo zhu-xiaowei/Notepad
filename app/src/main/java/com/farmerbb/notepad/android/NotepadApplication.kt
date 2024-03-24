@@ -22,6 +22,8 @@ import com.farmerbb.notepad.di.notepadModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 import software.aws.solution.clickstream.ClickstreamAnalytics
+import software.aws.solution.clickstream.ClickstreamAttribute
+import software.aws.solution.clickstream.ClickstreamConfiguration
 
 class NotepadApplication : Application() {
     override fun onCreate() {
@@ -32,9 +34,18 @@ class NotepadApplication : Application() {
         }
 
         try {
-            ClickstreamAnalytics.init(applicationContext)
-            ClickstreamAnalytics.getClickStreamConfiguration()
+            val globalAttribute = ClickstreamAttribute.builder()
+                .add("channel", "HUAWEI")
+                .add("level", 5.1)
+                .add("class", 6)
+                .add("isOpenNotification", true)
+                .build()
+            val configure = ClickstreamConfiguration()
                 .withLogEvents(true)
+                .withSendEventsInterval(15000)
+                .withCompressEvents(false)
+                .withInitialGlobalAttributes(globalAttribute)
+            ClickstreamAnalytics.init(applicationContext, configure)
             Log.i("Notepad", "Initialized ClickstreamAnalytics")
         } catch (error: AmplifyException) {
             Log.e("Notepad", "Could not initialize ClickstreamAnalytics", error)
