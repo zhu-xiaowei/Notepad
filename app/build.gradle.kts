@@ -115,5 +115,5 @@ dependencies {
     implementation(libs.systemuicontroller)
     debugImplementation(libs.compose.ui.tooling)
 //    implementation("software.aws.solution:clickstream:0.3.0")
-    implementation("com.google.firebase:firebase-analytics-ktx:21.2.2")
+    implementation("com.google.firebase:firebase-analytics-ktx:21.6.1")
 }

@@ -38,7 +38,7 @@ import com.farmerbb.notepad.utils.checkForUpdates
 import com.farmerbb.notepad.utils.safeGetOrDefault
 import com.farmerbb.notepad.utils.showShareSheet
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.analytics.logEvent
 import de.schnettler.datastore.manager.DataStoreManager
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
